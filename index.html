@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GCT Command Center | Native Control Suite</title>
+   <link rel="manifest" href="manifest.json">
+
+    <!-- Google Fonts: Syne, Plus Jakarta Sans, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --blood-red: #e60000;
+            --blood-red-bright: #ff1a1a;
+            --blood-red-deep: #8a0000;
+            --blood-red-glow: rgba(230, 0, 0, 0.45);
+            --blood-red-subtle: rgba(230, 0, 0, 0.08);
+            --bg-absolute-black: #000000;
+            --bg-surface-card: #08080a;
+            --bg-surface-elevated: #0f0f13;
+            --border-base: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(230, 0, 0, 0.35);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-absolute-black);
+            color: #f3f3f7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--blood-red); }
+
+        .app-grid-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+        }
+
+        .ambient-glow {
+            position: fixed; top: -140px; left: 50%;
+            transform: translateX(-50%); width: 650px; height: 320px;
+            background: radial-gradient(circle, rgba(230, 0, 0, 0.2) 0%, transparent 70%);
+            filter: blur(80px); z-index: -1; pointer-events: none;
+        }
+
+        .native-card {
+            background: var(--bg-surface-card);
+            border: 1px solid var(--border-base);
+            border-radius: 16px;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .native-card:hover {
+            border-color: var(--border-highlight);
+            box-shadow: 0 10px 30px -10px rgba(230, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .crimson-btn {
+            background: linear-gradient(135deg, var(--blood-red-bright) 0%, var(--blood-red-deep) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px -6px var(--blood-red-glow);
+            transition: all 0.25s ease;
+        }
+        .crimson-btn:hover {
+            box-shadow: 0 12px 30px -4px rgba(230, 0, 0, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .crimson-pill {
+            background: rgba(230, 0, 0, 0.12);
+            border: 1px solid rgba(230, 0, 0, 0.35);
+            color: #ff4d4d;
+        }
+
+        /* Status Pills */
+        .status-pill-verified {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+        .status-pill-unverified {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+        .status-pill-objection {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fbbf24;
+        }
+        .status-pill-pending {
+            background: rgba(163, 163, 163, 0.12);
+            border: 1px solid rgba(163, 163, 163, 0.3);
+            color: #d4d4d4;
+        }
+
+        /* Bottom App Bar Styling */
+        .bottom-appbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(7, 7, 9, 0.94);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px;
+        }
+
+        .tab-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #717182;
+            transition: all 0.22s ease;
+            position: relative;
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+        .tab-btn.active {
+            color: #ffffff;
+            background: rgba(230, 0, 0, 0.12);
+        }
+        .tab-btn.active i {
+            color: var(--blood-red-bright);
+            transform: scale(1.15);
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            width: 14px;
+            height: 2px;
+            border-radius: 4px;
+            background: var(--blood-red-bright);
+            box-shadow: 0 0 10px var(--blood-red-bright);
+        }
+
+        @keyframes modalShow {
+            from { opacity: 0; transform: scale(0.95) translateY(15px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-animate {
+            animation: modalShow 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="selection:bg-red-600 selection:text-white pb-28">
+
+    <div class="app-grid-bg"></div>
+    <div class="ambient-glow"></div>
+
+    <!-- App Header -->
+    <header class="sticky top-0 z-30 bg-black/85 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-black border border-white/10 flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(230,0,0,0.3)]">
+                <img src="https://i.ibb.co/PsyGfmfw/PLPL-Osman20260802-013315.png" alt="GCT" class="w-full h-full object-contain">
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-white text-base tracking-wider uppercase font-['Syne']">GCT Dashboard</span>
+                    <span class="text-[10px] crimson-pill px-2 py-0.5 rounded font-mono font-bold tracking-widest uppercase">Admin</span>
+                </div>
+                <p id="headerSubtext" class="text-[11.5px] text-neutral-400">ভেরিফিকেশন অ্যান্ড কমিউনিকেশন হাব</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="fetchApplicants()" class="w-9 h-9 rounded-xl bg-[#0d0d10] border border-white/10 text-neutral-300 hover:text-white hover:border-red-600 flex items-center justify-center transition-all" title="সিঙ্ক করুন">
+                <i id="syncIcon" class="fa-solid fa-arrows-rotate text-xs"></i>
+            </button>
+            <button onclick="openSettingsModal()" class="w-9 h-9 rounded-xl bg-[#0d0d10] border border-white/10 text-neutral-300 hover:text-white hover:border-red-600 flex items-center justify-center transition-all" title="সেটিংস">
+                <i class="fa-solid fa-sliders text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        <!-- ================= TAB 1: OVERVIEW / SUMMARY ================= -->
+        <section id="view_overview" class="tab-view space-y-6">
+            <!-- Metric Counter Cards (5 Cards in 2 rows / Grid) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+                <div class="native-card p-4 relative overflow-hidden group">
+                    <div class="flex items-center justify-between text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                        <span>মোট আবেদন</span>
+                        <i class="fa-solid fa-users text-neutral-600 group-hover:text-red-500 transition-colors"></i>
+                    </div>
+                    <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statTotal">0</div>
+                    <span class="text-[11px] text-neutral-500 mt-1 block">নিবন্ধিত প্রার্থী</span>
+                </div>
+
+                <div class="native-card p-4 relative overflow-hidden group border-emerald-950/40">
+                    <div class="flex items-center justify-between text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                        <span>ভেরিফাইড</span>
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    </div>
+                    <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono" id="statVerified">0</div>
+                    <span class="text-[11px] text-emerald-500/80 mt-1 block font-medium">অনুমোদিত সদস্য</span>
+                </div>
+
+                <div class="native-card p-4 relative overflow-hidden group border-amber-950/40">
+                    <div class="flex items-center justify-between text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                        <span>আপত্তি / ক্লিয়ারেন্স</span>
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono" id="statObjection">0</div>
+                    <span class="text-[11px] text-amber-500/80 mt-1 block">ত্রুটিযুক্ত ফাইল</span>
+                </div>
+
+                <div class="native-card p-4 relative overflow-hidden group border-red-950/40">
+                    <div class="flex items-center justify-between text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                        <span>আন-ভেরিফাইড</span>
+                        <i class="fa-solid fa-circle-xmark text-red-500"></i>
+                    </div>
+                    <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-red-400 font-mono" id="statUnverified">0</div>
+                    <span class="text-[11px] text-red-400/80 mt-1 block">বাতিলকৃত</span>
+                </div>
+
+                <div class="native-card p-4 relative overflow-hidden group col-span-2 sm:col-span-1">
+                    <div class="flex items-center justify-between text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                        <span>পেন্ডিং</span>
+                        <i class="fa-regular fa-clock text-neutral-400"></i>
+                    </div>
+                    <div class="mt-2 text-2xl sm:text-3xl font-extrabold text-neutral-300 font-mono" id="statPending">0</div>
+                    <span class="text-[11px] text-neutral-500 mt-1 block">পর্যালোচনা বাকি</span>
+                </div>
+            </div>
+
+            <!-- Quick Action Hub -->
+            <div class="native-card p-5 bg-gradient-to-r from-red-950/20 via-black to-black border-red-900/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-red-500"></i> কুইক অ্যাকশন হাব
+                    </h3>
+                    <p class="text-xs text-neutral-400 mt-1">ভেরিফিকেশন স্ট্যাটাস ও নির্দিষ্ট ক্যাটাগরি অনুযায়ী ফিল্টার করুন</p>
+                </div>
+                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <button onclick="switchTab('applicants'); setStatusFilter('all');" class="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-white/10 text-xs font-semibold text-white transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-list text-[10px] text-neutral-400"></i> সব প্রার্থী
+                    </button>
+                    <button onclick="switchTab('applicants'); setStatusFilter('Objection');" class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-[10px]"></i> আপত্তি তালিকা
+                    </button>
+                    <button onclick="switchTab('cyber');" class="px-3 py-1.5 rounded-lg crimson-btn text-xs font-bold text-white transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield text-[10px]"></i> সাইবার ইউনিট
+                    </button>
+                    <button onclick="exportToCSV()" class="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-white/10 text-xs font-semibold text-neutral-300 hover:text-white transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel text-emerald-500"></i> CSV এক্সপোর্ট
+                    </button>
+                </div>
+            </div>
+
+            <!-- Blood Group Demographic Breakdown -->
+            <div class="native-card p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-300 flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-red-500"></i> ব্লাড গ্রুপ ডিস্ট্রিবিউশন
+                    </h4>
+                    <span class="text-[11px] text-neutral-500 font-mono">লাইভ ডাটাবেজ</span>
+                </div>
+                <div id="bloodBreakdownGrid" class="grid grid-cols-4 sm:grid-cols-8 gap-2"></div>
+            </div>
+
+            <!-- Recent 4 Submissions -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-300 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-red-500"></i> সাম্প্রতিক আবেদনসমূহ
+                    </h4>
+                    <button onclick="switchTab('applicants')" class="text-xs text-red-400 hover:text-white font-semibold">সকল দেখুন &rarr;</button>
+                </div>
+                <div id="recentApplicantsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"></div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: APPLICANTS DIRECTORY ================= -->
+        <section id="view_applicants" class="tab-view hidden space-y-4">
+            
+            <!-- Filter & Search Control Panel -->
+            <div class="native-card p-3.5 space-y-3">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="সিরিয়াল (#001), নাম, ফোন বা ইমেইল দিয়ে সার্চ করুন..." 
+                        class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-black/60 border border-white/10 text-white placeholder-neutral-500 text-xs sm:text-sm focus:outline-none focus:border-red-600 transition-all font-sans">
+                </div>
+
+                <!-- Fast Status & Category Filters -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/5">
+                    <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+                        <button onclick="setStatusFilter('all', this)" class="status-filter-pill active px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-black transition-all">সকল</button>
+                        <button onclick="setStatusFilter('Verified', this)" class="status-filter-pill px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-400 bg-emerald-950/20 border border-emerald-500/20 transition-all">✓ ভেরিফাইড</button>
+                        <button onclick="setStatusFilter('Objection', this)" class="status-filter-pill px-3 py-1.5 rounded-lg text-xs font-medium text-amber-400 bg-amber-950/20 border border-amber-500/20 transition-all">⚠ আপত্তি (Objection)</button>
+                        <button onclick="setStatusFilter('Unverified', this)" class="status-filter-pill px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 bg-red-950/20 border border-red-500/20 transition-all">✕ আন-ভেরিফাইড</button>
+                        <button onclick="setStatusFilter('Pending', this)" class="status-filter-pill px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 bg-neutral-900 border border-white/5 transition-all">পেন্ডিং</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <select id="bloodFilter" onchange="applyFilters()" class="bg-black border border-white/10 text-neutral-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-600">
+                            <option value="">ব্লাড (সকল)</option>
+                            <option value="A+">A+</option> <option value="A-">A-</option>
+                            <option value="B+">B+</option> <option value="B-">B-</option>
+                            <option value="O+">O+</option> <option value="O-">O-</option>
+                            <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                        </select>
+                        <select id="sortOption" onchange="applyFilters()" class="bg-black border border-white/10 text-neutral-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-600">
+                            <option value="newest">নতুন আগে</option>
+                            <option value="oldest">পুরাতন আগে</option>
+                            <option value="name">নাম অনুযায়ী</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Counter Bar -->
+            <div class="flex items-center justify-between px-1">
+                <span class="text-xs text-neutral-400 font-medium flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-red-600"></span> ফিল্টার ফলাফল: 
+                    <b id="filteredCountBadge" class="text-white font-mono">0 জন</b>
+                </span>
+                <span class="text-[11px] text-neutral-500">কার্ডে ট্যাপ করে স্ট্যাটাস পরিবর্তন ও ইমেইল পাঠান</span>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="applicantsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden py-16 text-center">
+                <div class="w-14 h-14 rounded-2xl bg-[#0d0d10] border border-white/10 flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-folder-open text-xl text-neutral-500"></i>
+                </div>
+                <h4 class="text-sm font-bold text-neutral-300">কোনো তথ্য মেলেনি</h4>
+                <p class="text-xs text-neutral-500 mt-1">অন্য কোনো ফিল্টার বা কিওয়ার্ড দিয়ে অনুসন্ধান করুন।</p>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: CYBER DEFENSE UNIT ================= -->
+        <section id="view_cyber" class="tab-view hidden space-y-4">
+            <div class="native-card p-5 border-red-900/40 bg-gradient-to-b from-red-950/30 to-black">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-[10px] font-mono tracking-widest text-red-500 uppercase font-bold px-2 py-0.5 rounded bg-red-600/10 border border-red-500/20">Specialized Team</span>
+                        <h3 class="text-lg font-bold text-white mt-2 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-virus text-red-500"></i> সাইবার সিকিউরিটি ইউনিট
+                        </h3>
+                        <p class="text-xs text-neutral-400 mt-1">যারা হ্যাকিং, রিপোর্টিং বা রিকোভারি অভিজ্ঞতাসম্পন্ন</p>
+                    </div>
+                    <span id="cyberUnitTotalBadge" class="text-xl font-extrabold text-white font-mono px-3 py-1 rounded-xl bg-black border border-white/10">0</span>
+                </div>
+            </div>
+
+            <div id="cyberApplicantsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+        </section>
+
+        <!-- ================= TAB 4: ANALYTICS & LOGS ================= -->
+        <section id="view_analytics" class="tab-view hidden space-y-4">
+            <div class="native-card p-5">
+                <h3 class="text-base font-bold text-white flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-chart-pie text-red-500"></i> ভেরিফিকেশন ও ভৌগোলিক পরিসংখ্যান
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/5 space-y-3">
+                        <span class="text-xs font-bold uppercase text-neutral-400 tracking-wider block">ভেরিফিকেশন অগ্রগতি</span>
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-emerald-400">ভেরিফাইড হার</span>
+                                    <span id="statVerifiedPercent" class="font-mono text-emerald-400 font-bold">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-neutral-900 rounded-full overflow-hidden">
+                                    <div id="barVerified" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-amber-400">আপত্তি হার</span>
+                                    <span id="statObjectionPercent" class="font-mono text-amber-400 font-bold">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-neutral-900 rounded-full overflow-hidden">
+                                    <div id="barObjection" class="h-full bg-amber-500 transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/5 space-y-3">
+                        <span class="text-xs font-bold uppercase text-neutral-400 tracking-wider block">দেশভিত্তিক অনুপাত</span>
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-neutral-300">বাংলাদেশ (+880)</span>
+                                    <span id="statBdPercent" class="font-mono text-white font-bold">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-neutral-900 rounded-full overflow-hidden">
+                                    <div id="barBd" class="h-full bg-emerald-600 transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-neutral-300">আন্তর্জাতিক / প্রবাসী</span>
+                                    <span id="statIntlPercent" class="font-mono text-red-400 font-bold">0%</span>
+                                </div>
+                                <div class="w-full h-2 bg-neutral-900 rounded-full overflow-hidden">
+                                    <div id="barIntl" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw Data Quick Viewer -->
+            <div class="native-card p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-neutral-300">কমান্ড ডাটা লগ</h4>
+                    <button onclick="exportToCSV()" class="text-xs text-red-400 hover:text-white font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-download text-[10px]"></i> সম্পূর্ণ ব্যাকআপ নিন
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-neutral-300">
+                        <thead class="border-b border-white/10 text-neutral-500 font-mono uppercase text-[10px]">
+                            <tr>
+                                <th class="py-2 px-2">#ID</th>
+                                <th class="py-2 px-2">নাম</th>
+                                <th class="py-2 px-2">ফোন</th>
+                                <th class="py-2 px-2">ব্লাড</th>
+                                <th class="py-2 px-2">স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quickDataTableBody" class="divide-y divide-white/5 font-mono"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Details & Verification Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="native-card modal-animate w-full max-w-2xl rounded-2xl border-white/15 overflow-hidden my-auto max-h-[92vh] flex flex-col bg-[#08080a]">
+            
+            <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-black/60">
+                <div class="flex items-center gap-3">
+                    <span id="modalSerialBadge" class="px-2.5 py-1 crimson-pill rounded-lg text-xs font-mono font-bold">#001</span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="modalName" class="text-base sm:text-lg font-bold text-white leading-tight">আবেদনকারীর নাম</h3>
+                            <span id="modalCurrentStatusBadge" class="text-[10px] px-2 py-0.5 rounded font-bold status-pill-pending">পেন্ডিং</span>
+                        </div>
+                        <p id="modalTimestamp" class="text-[11px] text-neutral-400 font-mono mt-0.5">09/09/2026 12:45 PM</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-neutral-900 hover:bg-neutral-800 flex items-center justify-center text-neutral-300 hover:text-white transition-all">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-4">
+                
+                <!-- Verification Decision Controller -->
+                <div class="bg-black/80 rounded-xl p-3.5 border border-white/10 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+                            <i class="fa-solid fa-stamp text-red-500"></i> ভেরিফিকেশন অ্যাকশন ও সিদ্ধান্ত
+                        </span>
+                        <span class="text-[10px] text-neutral-500">ক্লিক করলে স্ট্যাটাস পরিবর্তন হবে</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button onclick="setApplicantStatus('Verified')" class="py-2 px-2.5 rounded-lg text-xs font-bold text-emerald-400 bg-emerald-950/20 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-check"></i> ভেরিফাইড
+                        </button>
+                        <button onclick="setApplicantStatus('Objection')" class="py-2 px-2.5 rounded-lg text-xs font-bold text-amber-400 bg-amber-950/20 border border-amber-500/30 hover:bg-amber-600 hover:text-black transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i> আপত্তি আছে
+                        </button>
+                        <button onclick="setApplicantStatus('Unverified')" class="py-2 px-2.5 rounded-lg text-xs font-bold text-red-400 bg-red-950/20 border border-red-500/30 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-xmark"></i> আন-ভেরিফাইড
+                        </button>
+                        <button onclick="setApplicantStatus('Pending')" class="py-2 px-2.5 rounded-lg text-xs font-bold text-neutral-400 bg-neutral-900 border border-white/10 hover:bg-neutral-800 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-clock"></i> পেন্ডিং রাখুন
+                        </button>
+                    </div>
+
+                    <!-- Objection Specific Sub-selector -->
+                    <div id="objectionTypeBox" class="hidden pt-2 border-t border-white/5">
+                        <label class="block text-[11px] text-amber-300 font-semibold mb-1.5">কোন বিষয়ে আপত্তি / ঘাটতি রয়েছে তা চিহ্নিত করুন:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button onclick="setObjectionReason('video')" id="obj_btn_video" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">🎥 শপথ ভিডিও</button>
+                            <button onclick="setObjectionReason('selfie')" id="obj_btn_selfie" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">📷 সেলফি ছবি</button>
+                            <button onclick="setObjectionReason('card')" id="obj_btn_card" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">📄 পরিচয়পত্র/ডকুমেন্ট</button>
+                            <button onclick="setObjectionReason('fb')" id="obj_btn_fb" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">🔗 রিয়েল ফেসবুক আইডি</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instant Email Dispatch Hub -->
+                <div class="bg-gradient-to-r from-red-950/20 via-black to-black rounded-xl p-4 border border-red-900/30 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-[11px] font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-red-500"></i> ইমেইল ডিসপ্যাচ হাব (One-Tap Dispatch)
+                        </h4>
+                        <span id="modalEmailLangTag" class="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-neutral-400 font-mono">ভাষা: অটো ডিটেক্ট</span>
+                    </div>
+
+                    <p class="text-xs text-neutral-400">নিচের বাটনে ট্যাপ করলে স্বয়ংক্রিয়ভাবে প্রফেশনাল ড্রাফট তৈরি হয়ে সরাসরি আপনার মেইল অ্যাপে ওপেন হবে:</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                        <button onclick="sendPreparedEmail('Verified')" class="py-2.5 px-3 rounded-lg bg-emerald-950/30 hover:bg-emerald-600 border border-emerald-500/30 hover:text-white text-emerald-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-circle-check"></i> কনগ্র্যাচুলেশন মেইল
+                        </button>
+                        <button onclick="sendPreparedEmail('Objection')" class="py-2.5 px-3 rounded-lg bg-amber-950/30 hover:bg-amber-600 border border-amber-500/30 hover:text-black text-amber-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text"></i> ক্লিয়ারেন্স / আপত্তি মেইল
+                        </button>
+                        <button onclick="sendPreparedEmail('Unverified')" class="py-2.5 px-3 rounded-lg bg-red-950/30 hover:bg-red-600 border border-red-500/30 hover:text-white text-red-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-open"></i> প্রত্যাখ্যান মেইল
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
+                        <span>স্বাক্ষর: <b>Rifat Mahmud</b> (Founder & Convener, GCT)</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-neutral-400">ম্যানুয়াল সুইচ:</span>
+                            <button onclick="toggleEmailLanguage('bn')" id="langBtnBn" class="px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">বাংলা</button>
+                            <button onclick="toggleEmailLanguage('en')" id="langBtnEn" class="px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">English</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demographic Attributes -->
+                <div class="grid grid-cols-3 gap-2.5 text-center">
+                    <div class="bg-black/70 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold block">বয়স</span>
+                        <span id="modalAge" class="text-sm font-bold text-white mt-0.5 block">-</span>
+                    </div>
+                    <div class="bg-black/70 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold block">ব্লাড গ্রুপ</span>
+                        <span id="modalBlood" class="text-sm font-bold text-red-500 mt-0.5 block font-mono">-</span>
+                    </div>
+                    <div class="bg-black/70 p-3 rounded-xl border border-white/5">
+                        <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold block">শিক্ষা</span>
+                        <span id="modalEducation" class="text-xs font-semibold text-neutral-200 mt-0.5 block truncate">-</span>
+                    </div>
+                </div>
+
+                <!-- Contacts -->
+                <div class="bg-black/50 rounded-xl p-4 border border-white/5 space-y-3 text-xs">
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-address-book text-red-500"></i> যোগাযোগের মাধ্যম
+                    </h4>
+                    <div class="flex items-center justify-between py-1 border-b border-white/5">
+                        <span class="text-neutral-400 flex items-center gap-2"><i class="fa-solid fa-phone w-3 text-neutral-500"></i> মোবাইল:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="modalPhone" class="font-mono text-white font-bold">-</span>
+                            <button onclick="copyField('modalPhone')" class="text-neutral-400 hover:text-white p-1"><i class="fa-regular fa-copy"></i></button>
+                            <a id="modalPhoneCall" href="#" class="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">কল</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between py-1 border-b border-white/5">
+                        <span class="text-neutral-400 flex items-center gap-2"><i class="fa-solid fa-envelope w-3 text-neutral-500"></i> ইমেইল:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="modalEmail" class="text-neutral-200 truncate max-w-[210px] font-mono">-</span>
+                            <button onclick="copyField('modalEmail')" class="text-neutral-400 hover:text-white p-1"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between py-1 border-b border-white/5">
+                        <span class="text-neutral-400 flex items-center gap-2"><i class="fa-brands fa-facebook w-3 text-blue-500"></i> ফেসবুক:</span>
+                        <a id="modalFb" href="#" target="_blank" class="text-blue-400 hover:underline flex items-center gap-1 font-mono">
+                            প্রোফাইল লিংক <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center justify-between py-1">
+                        <span class="text-neutral-400 flex items-center gap-2"><i class="fa-brands fa-telegram w-3 text-sky-400"></i> টেলিগ্রাম:</span>
+                        <span id="modalTg" class="text-neutral-300 font-mono">-</span>
+                    </div>
+                </div>
+
+                <!-- Cyber Security Detail -->
+                <div class="bg-black/50 rounded-xl p-4 border border-white/5">
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-red-500"></i> সাইবার সিকিউরিটি অভিজ্ঞতা
+                    </h4>
+                    <div id="cyberContent"></div>
+                </div>
+
+                <!-- Drive Attachments -->
+                <div>
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-down text-red-500"></i> সংযুক্ত ফাইলসমূহ (ক্লিক করে যাচাই করুন)
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <a id="modalSelfieBtn" href="#" target="_blank" class="p-3 rounded-xl bg-black border border-white/10 hover:border-red-600 transition-all flex flex-col items-center justify-center text-center group">
+                            <i class="fa-solid fa-camera text-xl text-neutral-500 group-hover:text-red-500 transition-colors mb-1.5"></i>
+                            <span class="text-[11px] font-bold text-neutral-200">সেলফি</span>
+                        </a>
+
+                        <a id="modalVideoBtn" href="#" target="_blank" class="p-3 rounded-xl bg-black border border-white/10 hover:border-red-600 transition-all flex flex-col items-center justify-center text-center group">
+                            <i class="fa-solid fa-circle-play text-xl text-neutral-500 group-hover:text-red-500 transition-colors mb-1.5"></i>
+                            <span class="text-[11px] font-bold text-neutral-200">শপথ ভিডিও</span>
+                        </a>
+
+                        <a id="modalDocBtn" href="#" target="_blank" class="p-3 rounded-xl bg-black border border-white/10 hover:border-red-600 transition-all flex flex-col items-center justify-center text-center group">
+                            <i class="fa-solid fa-id-card-clip text-xl text-neutral-500 group-hover:text-red-500 transition-colors mb-1.5"></i>
+                            <span class="text-[11px] font-bold text-neutral-200">ডকুমেন্ট</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 py-3.5 bg-black/80 border-t border-white/10 flex items-center justify-between">
+                <button onclick="copyAllDetails()" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-neutral-900 border border-white/10 transition-all">
+                    <i class="fa-regular fa-copy"></i> কপি
+                </button>
+                <button onclick="closeModal()" class="crimson-btn px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-white">
+                    বন্ধ করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="native-card modal-animate w-full max-w-md rounded-2xl p-6 bg-[#08080a] border-white/15">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-red-500"></i> ব্যাকএন্ড কনফিগারেশন
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block uppercase tracking-wider text-neutral-400 font-bold mb-1">Apps Script Web App URL</label>
+                    <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec"
+                        class="w-full px-3 py-2.5 rounded-lg bg-black border border-white/10 text-white font-mono focus:outline-none focus:border-red-600 text-xs">
+                </div>
+
+                <div>
+                    <label class="block uppercase tracking-wider text-neutral-400 font-bold mb-1">অ্যাডমিন পিন কোড (PIN)</label>
+                    <input type="password" id="pinInput" placeholder="PIN লিখুন"
+                        class="w-full px-3 py-2.5 rounded-lg bg-black border border-white/10 text-white font-mono focus:outline-none focus:border-red-600 text-xs">
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-2">
+                <button onclick="closeSettingsModal()" class="px-3.5 py-2 text-xs font-semibold text-neutral-400 hover:text-white">বাতিল</button>
+                <button onclick="saveSettings()" class="crimson-btn px-4 py-2 rounded-lg text-xs font-bold text-white uppercase tracking-wider">
+                    সংরক্ষণ করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Native Style Bottom App Bar -->
+    <nav class="bottom-appbar flex items-center justify-around">
+        <button onclick="switchTab('overview')" id="tab_overview" class="tab-btn active">
+            <i class="fa-solid fa-table-cells-large text-base"></i>
+            <span>হোম</span>
+        </button>
+        <button onclick="switchTab('applicants')" id="tab_applicants" class="tab-btn">
+            <i class="fa-solid fa-users-viewfinder text-base"></i>
+            <span>সকল আবেদন</span>
+        </button>
+        <button onclick="switchTab('cyber')" id="tab_cyber" class="tab-btn">
+            <i class="fa-solid fa-shield-virus text-base"></i>
+            <span>সাইবার ইউনিট</span>
+        </button>
+        <button onclick="switchTab('analytics')" id="tab_analytics" class="tab-btn">
+            <i class="fa-solid fa-chart-simple text-base"></i>
+            <span>এনালিটিক্স</span>
+        </button>
+    </nav>
+
+    <script>
+        let allApplicants = [];
+        let filteredApplicants = [];
+        let currentApplicant = null;
+        let activeStatusFilter = 'all';
+        let currentEmailLang = 'auto'; // 'auto', 'bn', 'en'
+        let currentObjectionReason = 'video';
+
+        const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxUVR8w_TX3gchJVasMRu0uKRg501_b4Af-fYiTutzq7fRsR0YlnErlVLWjLSkAOsU/exec";
+        const DEFAULT_PIN = "gCt#948!Xm@2026_SecQ";
+
+        let config = {
+            url: localStorage.getItem('gct_script_url') || DEFAULT_URL,
+            pin: localStorage.getItem('gct_admin_pin') || DEFAULT_PIN
+        };
+
+        // লোকাল স্টোরেজ থেকে কাস্টম স্ট্যাটাস এবং অবজেকশন ক্যাশে রাখা
+        function getLocalStatusMap() {
+            try { return JSON.parse(localStorage.getItem('gct_status_map') || '{}'); }
+            catch { return {}; }
+        }
+        function saveLocalStatusMap(map) {
+            localStorage.setItem('gct_status_map', JSON.stringify(map));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('scriptUrlInput').value = config.url;
+            document.getElementById('pinInput').value = config.pin;
+            fetchApplicants();
+        });
+
+        // Tab Switching Engine
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            const targetView = document.getElementById(`view_${tabName}`);
+            const targetTabBtn = document.getElementById(`tab_${tabName}`);
+            
+            if (targetView) targetView.classList.remove('hidden');
+            if (targetTabBtn) targetTabBtn.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function fetchApplicants() {
+            const syncIcon = document.getElementById('syncIcon');
+            syncIcon.classList.add('fa-spin');
+
+            try {
+                const endpoint = `${config.url}?pin=${encodeURIComponent(config.pin)}`;
+                const response = await fetch(endpoint);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const rawList = data.applicants || [];
+                    const statusMap = getLocalStatusMap();
+
+                    // শিট ডাটার সাথে লোকাল ভেরিফিকেশন স্টেট মার্জ করা
+                    allApplicants = rawList.map(app => {
+                        const localInfo = statusMap[app.serial];
+                        if (localInfo) {
+                            return {
+                                ...app,
+                                status: localInfo.status || app.status || 'Pending',
+                                objectionReason: localInfo.objectionReason || 'video'
+                            };
+                        }
+                        return {
+                            ...app,
+                            status: app.status || 'Pending',
+                            objectionReason: 'video'
+                        };
+                    });
+
+                    applyFilters();
+                    renderAnalytics();
+                } else {
+                    alertBox(`বার্তা: ${data.message || 'ডাটা লোড হয়নি'}`);
+                }
+            } catch (err) {
+                console.error('Fetch Error:', err);
+                alertBox('ডাটা লোড হয়নি। পিন বা কানেকশন চেক করুন।');
+            } finally {
+                syncIcon.classList.remove('fa-spin');
+            }
+        }
+
+        function setStatusFilter(status, btnElement) {
+            activeStatusFilter = status;
+            document.querySelectorAll('.status-filter-pill').forEach(btn => {
+                btn.className = 'status-filter-pill px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 bg-neutral-900 border border-white/5 transition-all';
+            });
+            if (btnElement) {
+                btnElement.className = 'status-filter-pill active px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-black transition-all';
+            }
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const blood = document.getElementById('bloodFilter').value;
+            const sort = document.getElementById('sortOption').value;
+
+            filteredApplicants = allApplicants.filter(app => {
+                const matchQuery = !query || 
+                    app.name.toLowerCase().includes(query) ||
+                    app.phone.includes(query) ||
+                    app.email.toLowerCase().includes(query) ||
+                    String(app.serial).includes(query);
+
+                const matchBlood = !blood || app.blood === blood;
+
+                let matchStatus = true;
+                if (activeStatusFilter !== 'all') {
+                    matchStatus = (app.status === activeStatusFilter);
+                }
+
+                return matchQuery && matchBlood && matchStatus;
+            });
+
+            // Sorting
+            if (sort === 'oldest') {
+                filteredApplicants.sort((a, b) => a.serial - b.serial);
+            } else if (sort === 'name') {
+                filteredApplicants.sort((a, b) => a.name.localeCompare(b.name));
+            } else {
+                filteredApplicants.sort((a, b) => b.serial - a.serial);
+            }
+
+            renderAllGrids();
+            updateStats();
+        }
+
+        function updateStats() {
+            const total = allApplicants.length;
+            const verifiedCount = allApplicants.filter(a => a.status === 'Verified').length;
+            const objectionCount = allApplicants.filter(a => a.status === 'Objection').length;
+            const unverifiedCount = allApplicants.filter(a => a.status === 'Unverified').length;
+            const pendingCount = allApplicants.filter(a => !a.status || a.status === 'Pending').length;
+            const cyberCount = allApplicants.filter(a => a.cyberExp === 'Yes').length;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statVerified').innerText = verifiedCount;
+            document.getElementById('statObjection').innerText = objectionCount;
+            document.getElementById('statUnverified').innerText = unverifiedCount;
+            document.getElementById('statPending').innerText = pendingCount;
+            document.getElementById('filteredCountBadge').innerText = `${filteredApplicants.length} জন`;
+            document.getElementById('cyberUnitTotalBadge').innerText = cyberCount;
+
+            // ব্লাড গ্রুপ মেট্রিক্স
+            const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+            const bloodContainer = document.getElementById('bloodBreakdownGrid');
+            bloodContainer.innerHTML = '';
+            
+            bloodTypes.forEach(type => {
+                const count = allApplicants.filter(a => a.blood === type).length;
+                const div = document.createElement('div');
+                div.className = 'bg-black/60 border border-white/5 rounded-xl p-2 text-center';
+                div.innerHTML = `
+                    <span class="text-[10px] font-mono text-neutral-500 font-bold block">${type}</span>
+                    <span class="text-sm font-bold ${count > 0 ? 'text-white' : 'text-neutral-600'} font-mono">${count}</span>
+                `;
+                bloodContainer.appendChild(div);
+            });
+        }
+
+        function getStatusBadgeHtml(status, reason) {
+            if (status === 'Verified') {
+                return `<span class="status-pill-verified text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-[9px]"></i> ভেরিফাইড
+                </span>`;
+            } else if (status === 'Objection') {
+                const mapReason = {
+                    video: 'শপথ ভিডিও',
+                    selfie: 'সেলফি',
+                    card: 'ডকুমেন্ট',
+                    fb: 'ফেসবুক আইডি'
+                };
+                return `<span class="status-pill-objection text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation text-[9px]"></i> আপত্তি: ${mapReason[reason] || 'ফাইল'}
+                </span>`;
+            } else if (status === 'Unverified') {
+                return `<span class="status-pill-unverified text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-circle-xmark text-[9px]"></i> আন-ভেরিফাইড
+                </span>`;
+            } else {
+                return `<span class="status-pill-pending text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <i class="fa-regular fa-clock text-[9px]"></i> পেন্ডিং
+                </span>`;
+            }
+        }
+
+        function renderAllGrids() {
+            renderMainGrid();
+            renderRecentGrid();
+            renderCyberGrid();
+        }
+
+        function createApplicantCard(app) {
+            const card = document.createElement('div');
+            card.className = 'native-card p-4 cursor-pointer relative group flex flex-col justify-between';
+            card.onclick = () => openModal(app);
+
+            const serialFormatted = String(app.serial).padStart(3, '0');
+            const isCyber = app.cyberExp === 'Yes';
+            const isIntl = !String(app.phone).startsWith('+880') && !String(app.phone).startsWith('01');
+
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-start justify-between mb-2.5">
+                        <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded crimson-pill">#${serialFormatted}</span>
+                        <div class="flex items-center gap-1">
+                            ${isIntl ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">প্রবাসী</span>' : ''}
+                            ${getStatusBadgeHtml(app.status, app.objectionReason)}
+                        </div>
+                    </div>
+
+                    <h4 class="text-sm font-bold text-white group-hover:text-red-400 transition-colors truncate">${app.name}</h4>
+                    
+                    <div class="flex items-center gap-3 text-[11px] text-neutral-400 mt-1.5">
+                        <span><i class="fa-solid fa-droplet text-red-500 text-[10px]"></i> ${app.blood}</span>
+                        <span><i class="fa-solid fa-cake-candles text-neutral-500 text-[10px]"></i> ${app.age} বছর</span>
+                        <span class="truncate"><i class="fa-solid fa-graduation-cap text-neutral-500 text-[10px]"></i> ${app.education}</span>
+                    </div>
+                </div>
+
+                <div class="mt-3.5 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500 font-mono">
+                    <span><i class="fa-solid fa-phone text-[9px]"></i> ${app.phone}</span>
+                    <span class="text-neutral-400 group-hover:text-white flex items-center gap-1 font-sans text-[10px] font-semibold">
+                        যাচাই করুন <i class="fa-solid fa-chevron-right text-[8px] group-hover:translate-x-0.5 transition-transform"></i>
+                    </span>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderMainGrid() {
+            const grid = document.getElementById('applicantsGrid');
+            const empty = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            if (filteredApplicants.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            filteredApplicants.forEach(app => grid.appendChild(createApplicantCard(app)));
+        }
+
+        function renderRecentGrid() {
+            const recentGrid = document.getElementById('recentApplicantsGrid');
+            recentGrid.innerHTML = '';
+            const recentList = [...allApplicants].reverse().slice(0, 4);
+            recentList.forEach(app => recentGrid.appendChild(createApplicantCard(app)));
+        }
+
+        function renderCyberGrid() {
+            const cyberGrid = document.getElementById('cyberApplicantsGrid');
+            cyberGrid.innerHTML = '';
+            const cyberList = allApplicants.filter(a => a.cyberExp === 'Yes');
+            cyberList.forEach(app => cyberGrid.appendChild(createApplicantCard(app)));
+        }
+
+        function renderAnalytics() {
+            const total = allApplicants.length || 1;
+            const verifiedCount = allApplicants.filter(a => a.status === 'Verified').length;
+            const objectionCount = allApplicants.filter(a => a.status === 'Objection').length;
+            const bdCount = allApplicants.filter(a => String(a.phone).startsWith('+880') || String(a.phone).startsWith('01')).length;
+            const intlCount = total - bdCount;
+
+            const verifiedPct = Math.round((verifiedCount / total) * 100);
+            const objectionPct = Math.round((objectionCount / total) * 100);
+            const bdPct = Math.round((bdCount / total) * 100);
+            const intlPct = Math.round((intlCount / total) * 100);
+
+            document.getElementById('statVerifiedPercent').innerText = `${verifiedPct}%`;
+            document.getElementById('barVerified').style.width = `${verifiedPct}%`;
+
+            document.getElementById('statObjectionPercent').innerText = `${objectionPct}%`;
+            document.getElementById('barObjection').style.width = `${objectionPct}%`;
+
+            document.getElementById('statBdPercent').innerText = `${bdPct}%`;
+            document.getElementById('barBd').style.width = `${bdPct}%`;
+
+            document.getElementById('statIntlPercent').innerText = `${intlPct}%`;
+            document.getElementById('barIntl').style.width = `${intlPct}%`;
+
+            // Table Body
+            const tableBody = document.getElementById('quickDataTableBody');
+            tableBody.innerHTML = '';
+            allApplicants.slice(0, 8).forEach(app => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-white/5 cursor-pointer';
+                tr.onclick = () => openModal(app);
+                tr.innerHTML = `
+                    <td class="py-2 px-2 text-red-400">#${String(app.serial).padStart(3, '0')}</td>
+                    <td class="py-2 px-2 text-white font-sans">${app.name}</td>
+                    <td class="py-2 px-2 text-neutral-400">${app.phone}</td>
+                    <td class="py-2 px-2">${app.blood}</td>
+                    <td class="py-2 px-2">${getStatusBadgeHtml(app.status, app.objectionReason)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // শিক্ষাগত যোগ্যতা অনুযায়ী ভাষা সনাক্তকরণ (HSC বা সমমানের বেশি হলে ইংরেজি)
+        function isHigherEducated(eduString) {
+            if (!eduString) return false;
+            const s = eduString.toLowerCase();
+            const higherKeywords = [
+                'hsc', 'h.s.c', 'bba', 'mba', 'bsc', 'b.sc', 'msc', 'm.sc', 'ba', 'ma', 
+                'fazil', 'kamil', 'alim', 'honours', 'honors', 'degree', 'masters', 'undergrad', 
+                'graduate', 'postgraduate', 'university', 'college', 'b.com', 'm.com', 'b.tech'
+            ];
+            return higherKeywords.some(kw => s.includes(kw));
+        }
+
+        function openModal(applicant) {
+            currentApplicant = applicant;
+            const modal = document.getElementById('detailModal');
+
+            document.getElementById('modalSerialBadge').innerText = `#${String(applicant.serial).padStart(3, '0')}`;
+            document.getElementById('modalName').innerText = applicant.name;
+            document.getElementById('modalTimestamp').innerText = applicant.timestamp || '-';
+
+            document.getElementById('modalAge').innerText = `${applicant.age} বছর`;
+            document.getElementById('modalBlood').innerText = applicant.blood;
+            document.getElementById('modalEducation').innerText = applicant.education;
+
+            document.getElementById('modalPhone').innerText = applicant.phone;
+            document.getElementById('modalPhoneCall').href = `tel:${applicant.phone}`;
+            document.getElementById('modalEmail').innerText = applicant.email;
+            document.getElementById('modalFb').href = applicant.fb.startsWith('http') ? applicant.fb : `https://${applicant.fb}`;
+            document.getElementById('modalTg').innerText = applicant.tg || 'N/A';
+
+            // স্ট্যাটাস ও অবজেকশন সিঙ্ক
+            updateModalStatusBadge(applicant.status, applicant.objectionReason);
+            currentObjectionReason = applicant.objectionReason || 'video';
+            highlightObjectionBtn(currentObjectionReason);
+
+            if (applicant.status === 'Objection') {
+                document.getElementById('objectionTypeBox').classList.remove('hidden');
+            } else {
+                document.getElementById('objectionTypeBox').classList.add('hidden');
+            }
+
+            // ভাষা সেটআপ
+            currentEmailLang = 'auto';
+            const higher = isHigherEducated(applicant.education);
+            const detectedLangText = higher ? 'ইংরেজি (HSC+)' : 'বাংলা (স্ট্যান্ডার্ড)';
+            document.getElementById('modalEmailLangTag').innerText = `ভাষা: ${detectedLangText}`;
+            updateLangButtonStyles();
+
+            const cyberBox = document.getElementById('cyberContent');
+            if (applicant.cyberExp === 'Yes') {
+                cyberBox.innerHTML = `
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex items-center gap-2 text-red-400 font-bold">
+                            <i class="fa-solid fa-circle-check"></i> পূর্ব অভিজ্ঞতা রয়েছে
+                        </div>
+                        <p class="text-neutral-300"><b class="text-neutral-400">কাজের ধরন:</b> ${applicant.cyberWork}</p>
+                        <p class="text-neutral-300"><b class="text-neutral-400">কাজের সময়কাল:</b> ${applicant.cyberDuration}</p>
+                        <p class="text-neutral-300"><b class="text-neutral-400">আগের টিম:</b> ${applicant.cyberTeam}</p>
+                    </div>
+                `;
+            } else {
+                cyberBox.innerHTML = `
+                    <div class="text-xs text-neutral-400 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-xmark text-neutral-500"></i> কোনো পূর্ব অভিজ্ঞতা নেই (শিক্ষানবিশ)।
+                    </div>
+                `;
+            }
+
+            setMediaButton('modalSelfieBtn', applicant.selfieUrl);
+            setMediaButton('modalVideoBtn', applicant.videoUrl);
+            setMediaButton('modalDocBtn', applicant.docUrl);
+
+            modal.classList.remove('hidden');
+        }
+
+        function updateModalStatusBadge(status, reason) {
+            const badge = document.getElementById('modalCurrentStatusBadge');
+            if (status === 'Verified') {
+                badge.className = 'text-[10px] px-2 py-0.5 rounded font-bold status-pill-verified';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> ভেরিফাইড';
+            } else if (status === 'Objection') {
+                badge.className = 'text-[10px] px-2 py-0.5 rounded font-bold status-pill-objection';
+                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> আপত্তি আছে';
+            } else if (status === 'Unverified') {
+                badge.className = 'text-[10px] px-2 py-0.5 rounded font-bold status-pill-unverified';
+                badge.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> আন-ভেরিফাইড';
+            } else {
+                badge.className = 'text-[10px] px-2 py-0.5 rounded font-bold status-pill-pending';
+                badge.innerHTML = '<i class="fa-regular fa-clock"></i> পেন্ডিং';
+            }
+        }
+
+        function setApplicantStatus(newStatus) {
+            if (!currentApplicant) return;
+
+            currentApplicant.status = newStatus;
+            const statusMap = getLocalStatusMap();
+            statusMap[currentApplicant.serial] = {
+                status: newStatus,
+                objectionReason: currentApplicant.objectionReason || 'video'
+            };
+            saveLocalStatusMap(statusMap);
+
+            updateModalStatusBadge(newStatus, currentApplicant.objectionReason);
+
+            const objectionBox = document.getElementById('objectionTypeBox');
+            if (newStatus === 'Objection') {
+                objectionBox.classList.remove('hidden');
+            } else {
+                objectionBox.classList.add('hidden');
+            }
+
+            applyFilters();
+            renderAnalytics();
+            alertBox(`স্ট্যাটাস পরিবর্তন: ${newStatus}`);
+        }
+
+        function setObjectionReason(reasonKey) {
+            if (!currentApplicant) return;
+            currentObjectionReason = reasonKey;
+            currentApplicant.objectionReason = reasonKey;
+
+            const statusMap = getLocalStatusMap();
+            statusMap[currentApplicant.serial] = {
+                status: 'Objection',
+                objectionReason: reasonKey
+            };
+            saveLocalStatusMap(statusMap);
+
+            highlightObjectionBtn(reasonKey);
+            updateModalStatusBadge('Objection', reasonKey);
+            applyFilters();
+            alertBox('আপত্তির নির্দিষ্ট বিষয় সংরক্ষিত হয়েছে');
+        }
+
+        function highlightObjectionBtn(reasonKey) {
+            const keys = ['video', 'selfie', 'card', 'fb'];
+            keys.forEach(k => {
+                const btn = document.getElementById(`obj_btn_${k}`);
+                if (btn) {
+                    if (k === reasonKey) {
+                        btn.className = 'obj-opt-btn py-1 px-2 rounded bg-amber-500/20 border border-amber-500 text-[11px] text-amber-300 font-bold transition-all text-center';
+                    } else {
+                        btn.className = 'obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-400 hover:border-amber-500 transition-all text-center';
+                    }
+                }
+            });
+        }
+
+        function toggleEmailLanguage(lang) {
+            currentEmailLang = lang;
+            const text = lang === 'en' ? 'ইংরেজি (ম্যানুয়াল)' : 'বাংলা (ম্যানুয়াল)';
+            document.getElementById('modalEmailLangTag').innerText = `ভাষা: ${text}`;
+            updateLangButtonStyles();
+        }
+
+        function updateLangButtonStyles() {
+            const btnBn = document.getElementById('langBtnBn');
+            const btnEn = document.getElementById('langBtnEn');
+            if (currentEmailLang === 'bn') {
+                btnBn.className = 'px-1.5 py-0.5 rounded bg-red-600 text-white font-bold text-[10px]';
+                btnEn.className = 'px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-400';
+            } else if (currentEmailLang === 'en') {
+                btnEn.className = 'px-1.5 py-0.5 rounded bg-red-600 text-white font-bold text-[10px]';
+                btnBn.className = 'px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-400';
+            } else {
+                btnBn.className = 'px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-400';
+                btnEn.className = 'px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-400';
+            }
+        }
+
+        // ================= EMAIL GENERATOR ENGINE =================
+        function generateEmailContent(type, applicant) {
+            const higher = isHigherEducated(applicant.education);
+            let useEnglish = (currentEmailLang === 'en') || (currentEmailLang === 'auto' && higher);
+            const serialNo = String(applicant.serial).padStart(3, '0');
+            const name = applicant.name;
+
+            const reason = applicant.objectionReason || currentObjectionReason || 'video';
+
+            let subject = "";
+            let body = "";
+
+            if (type === 'Verified') {
+                if (useEnglish) {
+                    subject = `Official Acceptance: GCT Enrollment (#${serialNo}) - Ghuraba Cyber Tribe`;
+                    body = `Dear ${name},
+
+Congratulations! 
+
+We are pleased to inform you that your application (#${serialNo}) for enrollment in Ghuraba Cyber Tribe (GCT) has been thoroughly reviewed and officially APPROVED. You have successfully met all our initial verification standards and cyber conduct protocols.
+
+Our team will soon add you to our official internal communication channels and operational messenger groups. Please keep an eye on your email and Telegram for further instructions regarding onboard briefing and unit assignment.
+
+Welcome to the tribe. Stand steadfast for integrity, knowledge, and community defense.
+
+Best regards,
+
+Rifat Mahmud
+Founder & Convener
+Ghuraba Cyber Tribe (GCT)
+Website/Portal: team.gct-joining-form.workers.dev`;
+                } else {
+                    subject = `অভিনন্দন! GCT রিক্রুটমেন্ট আবেদন গৃহীত হয়েছে (#${serialNo}) - Ghuraba Cyber Tribe`;
+                    body = `আসসালামু আলাইকুম ${name},
+
+অত্যন্ত আনন্দের সাথে জানানো যাচ্ছে যে, Ghuraba Cyber Tribe (GCT)-এ যোগদানের জন্য আপনার পাঠানো আবেদনটি (#${serialNo}) সফলভাবে যাচাই ও চূড়ান্তভাবে অনুমোদিত (VERIFIED) হয়েছে। 
+
+খুব শীঘ্রই আপনাকে আমাদের অফিশিয়াল ইন্টারনাল মেসেঞ্জার গ্রুপ ও অপারেশনাল ইউনিটে যুক্ত করা হবে। অনুগ্রহ করে পরবর্তী নির্দেশনা ও ওরিয়েন্টেশনের জন্য আপনার টেলিগ্রাম এবং ইমেইলে লক্ষ্য রাখুন।
+
+টিম GCT-এর পক্ষ থেকে আপনাকে উষ্ণ স্বাগতম। সততা, নিষ্ঠা ও মানবতার সেবায় আপনার সক্রিয় অংশগ্রহণ কাম্য।
+
+ধন্যবাদান্তে,
+
+Rifat Mahmud
+Founder & Convener,
+Ghuraba Cyber Tribe`;
+                }
+            } 
+            else if (type === 'Objection') {
+                const objectionDetailsBn = {
+                    video: "আপনার পাঠানো শপথ ভিডিওতে নির্দেশনা অনুযায়ী সম্পূর্ণ বাক্য স্পষ্ট উচ্চারণে বলা হয়নি অথবা ভিডিওটি অসম্পূর্ণ।",
+                    selfie: "আপনার পাঠানো সেলফি ছবিটি ঝাপসা/স্পষ্ট নয়, যার ফলে পরিচয় সঠিকভাবে নিশ্চিত করা সম্ভব হচ্ছে না।",
+                    card: "আপনার আপলোড করা পরিচয়পত্র/ডকুমেন্টটি অস্পষ্ট অথবা নীতিমালার সাথে সামঞ্জস্যপূর্ণ নয়।",
+                    fb: "আপনার প্রদানকৃত ফেসবুক প্রোফাইল লিংকটি আসল বা স্থায়ী প্রোফাইল বলে প্রতীয়মান হচ্ছে না অথবা প্রোফাইলটি রিচ করা যাচ্ছে না।"
+                };
+
+                const objectionDetailsEn = {
+                    video: "The recorded oath video does not clearly match our prescribed script or the audio/visual quality is incomplete.",
+                    selfie: "The submitted selfie photograph is blurry, unclear, or lacks adequate facial visibility for identity verification.",
+                    card: "The uploaded institutional ID/document is either unreadable or does not meet our accepted verification criteria.",
+                    fb: "The provided Facebook profile link appears invalid, inactive, or not an authentic primary personal account."
+                };
+
+                const requiredActionBn = {
+                    video: "দয়া করে স্ক্রিপ্ট অনুযায়ী একটি নতুন পরিষ্কার শপথ ভিডিও রেকর্ড করে রিপ্লাই মেইলে এটাচ করে পাঠান।",
+                    selfie: "দয়া করে পর্যাপ্ত আলোতে সদ্য তোলা একটি স্পষ্ট ও পরিষ্কার সেলফি ছবি এই মেইলের রিপ্লাইয়ে সংযুক্ত করুন।",
+                    card: "দয়া করে আপনার শিক্ষাপ্রতিষ্ঠান/অফিস/জন্মসনদের একটি স্পষ্ট ছবি বা PDF এই মেইলে রিপ্লাই করুন।",
+                    fb: "দয়া করে আপনার মূল ও সক্রিয় ফেসবুক প্রোফাইলের সঠিক লিঙ্ক এই মেইলের জবাবে প্রদান করুন।"
+                };
+
+                const requiredActionEn = {
+                    video: "Please record a fresh oath video following the exact script and attach it in response to this email.",
+                    selfie: "Please reply to this email attaching a fresh, clear, well-lit selfie photograph.",
+                    card: "Please attach a clear photo or PDF scan of an authentic institutional ID/certificate in response.",
+                    fb: "Please provide the direct URL of your authentic and primary active Facebook profile in response."
+                };
+
+                if (useEnglish) {
+                    subject = `Action Required: Verification Clearance for GCT Application (#${serialNo})`;
+                    body = `Dear ${name},
+
+Thank you for your interest in joining Ghuraba Cyber Tribe (GCT).
+
+During our administrative verification of your application (#${serialNo}), our review panel identified a specific clearance discrepancy regarding your submission:
+
+Issue Identified:
+- ${objectionDetailsEn[reason] || objectionDetailsEn.video}
+
+Required Action:
+- ${requiredActionEn[reason] || requiredActionEn.video}
+
+To complete your enrollment and proceed to team assignment, kindly respond to this email with the requested clarification or file within 48 hours. Upon re-evaluation, your verification status will be updated immediately.
+
+We appreciate your cooperation and patience.
+
+Sincerely,
+
+Rifat Mahmud
+Founder & Convener
+Ghuraba Cyber Tribe (GCT)`;
+                } else {
+                    subject = `জরুরি নোটিশ: GCT আবেদনে ফাইল ক্লিয়ারেন্স সংক্রান্ত (#${serialNo}) - Ghuraba Cyber Tribe`;
+                    body = `আসসালামু আলাইকুম ${name},
+
+Ghuraba Cyber Tribe (GCT)-এ যুক্ত হওয়ার আগ্রহ প্রকাশের জন্য আপনাকে ধন্যবাদ।
+
+আপনার আবেদনটি (#${serialNo}) পর্যালোচনা করার সময় ভেরিফিকেশন প্যানেল একটি নির্দিষ্ট বিষয়ে ঘাটতি/আপত্তি পরিলক্ষিত করেছে:
+
+পর্যবেক্ষণ:
+- ${objectionDetailsBn[reason] || objectionDetailsBn.video}
+
+আপনার করণীয়:
+- ${requiredActionBn[reason] || requiredActionBn.video}
+
+আপনার আবেদনটি সফলভাবে ভেরিফাইড করতে পরবর্তী ৪৮ ঘণ্টার মধ্যে এই ইমেইলের সরাসরি রিপ্লাই দিয়ে সংশোধিত ফাইল বা সঠিক তথ্য পাঠিয়ে দিন। আপনার তথ্য পাওয়ার সাথে সাথেই প্রোফাইলটি ভেরিফাইড করা হবে।
+
+ধন্যবাদান্তে,
+
+Rifat Mahmud
+Founder & Convener,
+Ghuraba Cyber Tribe`;
+                }
+            } 
+            else { // Unverified / Rejection
+                if (useEnglish) {
+                    subject = `Update Regarding Your GCT Application (#${serialNo})`;
+                    body = `Dear ${name},
+
+Thank you for submitting your application (#${serialNo}) to join Ghuraba Cyber Tribe (GCT).
+
+After a comprehensive review of your profile and submitted credentials against our operational guidelines, we regret to inform you that we are unable to approve your enrollment at this time. Consequently, your status has been marked as Unverified.
+
+Our selection process adheres to strict verification benchmarks regarding identity authentication, cyber ethics, and tribal requirements. While your current application could not be accommodated, we genuinely encourage you to continue enhancing your skills and maintain ethical cyber awareness.
+
+We wish you all the best in your future endeavors.
+
+Regards,
+
+Rifat Mahmud
+Founder & Convener
+Ghuraba Cyber Tribe (GCT)`;
+                } else {
+                    subject = `আবেদন সংক্রান্ত বিজ্ঞপ্তি (#${serialNo}) - Ghuraba Cyber Tribe`;
+                    body = `আসসালামু আলাইকুম ${name},
+
+Ghuraba Cyber Tribe (GCT)-এ আবেদনের জন্য আপনাকে ধন্যবাদ।
+
+আমাদের অ্যাডমিন প্যানেল কর্তৃক আপনার আবেদনটি (#${serialNo}) বিস্তারিত পর্যালোচনার পর অত্যন্ত দুঃখের সাথে জানানো যাচ্ছে যে, আমাদের নির্ধারিত ভেরিফিকেশন নীতিমালা ও বর্তমান ক্রাইটেরিয়া পূরণ না হওয়ায় আপনার আবেদনটি এই মুহূর্তে অনুমোদন (Unverified) করা সম্ভব হচ্ছে না।
+
+GCT সর্বদা কঠোর সাইবার এথিক্স ও সুনির্দিষ্ট মানদণ্ড বজায় রেখে সদস্য সংগ্রহ করে থাকে। ভবিষ্যতে নতুন কোনো সুযোগ বা রিক্রুটমেন্ট সেশন চালু হলে আপনি পুনরায় আবেদন করার সুযোগ পাবেন।
+
+আপনার ভবিষ্যৎ জীবনের উন্নতি ও সাফল্য কামনা করছি।
+
+ধন্যবাদান্তে,
+
+Rifat Mahmud
+Founder & Convener,
+Ghuraba Cyber Tribe`;
+                }
+            }
+
+            return { subject, body };
+        }
+
+        function sendPreparedEmail(type) {
+            if (!currentApplicant) {
+                alertBox('আবেদনকারী নির্বাচন করা হয়নি');
+                return;
+            }
+
+            if (!currentApplicant.email || !currentApplicant.email.includes('@')) {
+                alertBox('এই প্রার্থীর সঠিক ইমেইল এড্রেস পাওয়া যায়নি');
+                return;
+            }
+
+            // যদি এই টাইপে ক্লিক করে থাকে, তবে স্ট্যাটাসটিও স্বয়ংক্রিয়ভাবে সিঙ্ক করে দেওয়া
+            setApplicantStatus(type);
+
+            const emailData = generateEmailContent(type, currentApplicant);
+            const encodedSubject = encodeURIComponent(emailData.subject);
+            const encodedBody = encodeURIComponent(emailData.body);
+
+            const mailtoUri = `mailto:${encodeURIComponent(currentApplicant.email)}?subject=${encodedSubject}&body=${encodedBody}`;
+
+            alertBox('মেইল ড্রাফট আপনার ইমেইল অ্যাপে পাঠানো হচ্ছে...');
+            window.location.href = mailtoUri;
+        }
+
+        function setMediaButton(elementId, url) {
+            const btn = document.getElementById(elementId);
+            if (url && url.length > 10) {
+                btn.href = url;
+                btn.classList.remove('opacity-30', 'pointer-events-none');
+            } else {
+                btn.href = '#';
+                btn.classList.add('opacity-30', 'pointer-events-none');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            currentApplicant = null;
+        }
+
+        function copyField(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            copyToClipboard(text);
+        }
+
+        function copyAllDetails() {
+            if (!currentApplicant) return;
+            const text = `--- GCT Applicant Profile (#${currentApplicant.serial}) ---\n` +
+                         `নাম: ${currentApplicant.name}\n` +
+                         `স্ট্যাটাস: ${currentApplicant.status}\n` +
+                         `বয়স: ${currentApplicant.age} বছর\n` +
+                         `শিক্ষা: ${currentApplicant.education}\n` +
+                         `ব্লাড গ্রুপ: ${currentApplicant.blood}\n` +
+                         `ফোন: ${currentApplicant.phone}\n` +
+                         `ইমেইল: ${currentApplicant.email}\n` +
+                         `ফেসবুক: ${currentApplicant.fb}\n` +
+                         `টেলিগ্রাম: ${currentApplicant.tg}\n` +
+                         `সাইবার অভিজ্ঞতা: ${currentApplicant.cyberExp}\n` +
+                         `ফাইল লিঙ্ক: ${currentApplicant.selfieUrl}`;
+            copyToClipboard(text);
+        }
+
+        function copyToClipboard(str) {
+            navigator.clipboard.writeText(str).then(() => alertBox('ক্লিপবোর্ডে কপি করা হয়েছে!'))
+            .catch(() => {
+                const el = document.createElement('textarea');
+                el.value = str;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                alertBox('ক্লিপবোর্ডে কপি করা হয়েছে!');
+            });
+        }
+
+        function exportToCSV() {
+            if (allApplicants.length === 0) {
+                alertBox('এক্সপোর্ট করার মতো ডাটা নেই');
+                return;
+            }
+            let csv = "Serial,Status,ObjectionReason,Timestamp,Name,Age,Education,Blood,Phone,Email,Facebook,Telegram,CyberExp,Work,Duration,Team,Selfie,Video,Document\n";
+            allApplicants.forEach(a => {
+                csv += `"${a.serial}","${a.status || 'Pending'}","${a.objectionReason || 'N/A'}","${a.timestamp}","${a.name}","${a.age}","${a.education}","${a.blood}","${a.phone}","${a.email}","${a.fb}","${a.tg}","${a.cyberExp}","${a.cyberWork}","${a.cyberDuration}","${a.cyberTeam}","${a.selfieUrl}","${a.videoUrl}","${a.docUrl}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `GCT_Applicants_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alertBox('CSV ফাইল ডাউনলোড হচ্ছে!');
+        }
+
+        function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+        
+        function saveSettings() {
+            const url = document.getElementById('scriptUrlInput').value.trim();
+            const pin = document.getElementById('pinInput').value.trim();
+
+            config.url = url || DEFAULT_URL;
+            config.pin = pin || DEFAULT_PIN;
+
+            localStorage.setItem('gct_script_url', config.url);
+            localStorage.setItem('gct_admin_pin', config.pin);
+
+            closeSettingsModal();
+            fetchApplicants();
+        }
+
+        function alertBox(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 z-[9999] bg-black border border-red-600/50 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 font-medium';
+            toast.innerHTML = `<i class="fa-solid fa-shield-halved text-red-500"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+    </script>
+</body>
+</html>
