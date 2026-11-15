@@ -253,7 +253,7 @@
                         <i class="fa-solid fa-clock-rotate-left text-red-500"></i> ফর্ম পূরণের গড় সময়
                     </h4>
                     <div class="bg-black/60 p-4 rounded-xl border border-white/5 text-center my-auto">
-                        <span id="statAvgDuration" class="text-2xl font-extrabold text-white font-mono">-- മി</span>
+                        <span id="statAvgDuration" class="text-2xl font-extrabold text-white font-mono">-- মি</span>
                         <span class="text-[11px] text-neutral-400 mt-1 block">গড় সময় ব্যয় (Average Duration)</span>
                     </div>
                 </div>
@@ -512,7 +512,7 @@
                         <h4 class="text-[11px] font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
                             <i class="fa-solid fa-paper-plane text-red-500"></i> ইমেইল ডিসপ্যাচ হাব (One-Tap Dispatch)
                         </h4>
-                        <span id="modalEmailLangTag" class="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-neutral-400 font-mono">ভাষা: অটো</span>
+                        <span id="modalEmailLangTag" class="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-neutral-400 font-mono">ভাষা: বাংলা</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
@@ -528,11 +528,11 @@
                     </div>
 
                     <div class="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
-                        <span>স্বাক্ষর: <b>Team BCT Convener</b></span>
+                        <span>স্বাক্ষর: <b>Rifat Mahmud (Founder & Convener)</b></span>
                         <div class="flex items-center gap-2">
                             <span class="text-[10px] text-neutral-400">ম্যানুয়াল সুইচ:</span>
-                            <button onclick="toggleEmailLanguage('bn')" id="langBtnBn" class="px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">বাংলা</button>
-                            <button onclick="toggleEmailLanguage('en')" id="langBtnEn" class="px-1.5 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">English</button>
+                            <button onclick="toggleEmailLanguage('bn')" id="langBtnBn" class="px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold">বাংলা</button>
+                            <button onclick="toggleEmailLanguage('en')" id="langBtnEn" class="px-2 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">English</button>
                         </div>
                     </div>
                 </div>
@@ -689,7 +689,7 @@
         let filteredApplicants = [];
         let currentApplicant = null;
         let activeStatusFilter = 'all';
-        let currentEmailLang = 'auto';
+        let currentEmailLang = 'bn';
         let currentObjectionReason = 'video';
         let selectedSerials = new Set();
 
@@ -747,8 +747,8 @@
                             ...app,
                             status: localInfo?.status || app.status || 'Pending',
                             objectionReason: localInfo?.objectionReason || 'video',
-                            ipAddress: app.ipAddress || '192.168.x.x',
-                            timeSpent: app.timeSpent || '২ মিনিট',
+                            ipAddress: app.ipAddress || app.ip || app.IP || 'N/A',
+                            timeSpent: app.timeSpent || app.duration || 'N/A',
                             region: getRegionByPhone(app.phone)
                         };
                     });
@@ -769,7 +769,6 @@
         function getRegionByPhone(phone) {
             if (!phone) return 'অন্যান্য';
             const clean = phone.replace(/\D/g, '');
-            // সিম বা লোকেশন প্রিফিক্স ম্যাপিং (বাংলাদেশী অপারেটর বা অঞ্চল অনুমান)
             if (clean.startsWith('88017') || clean.startsWith('017')) return 'ঢাকা / গাজীপুর';
             if (clean.startsWith('88018') || clean.startsWith('018')) return 'চট্টগ্রাম';
             if (clean.startsWith('88019') || clean.startsWith('019')) return 'সিলেট / উত্তর';
@@ -832,9 +831,8 @@
             document.getElementById('statPending').innerText = pendingCount;
             document.getElementById('filteredCountBadge').innerText = `${filteredApplicants.length} জন`;
             document.getElementById('cyberUnitTotalBadge').innerText = cyberCount;
-            document.getElementById('statAvgDuration').innerText = "১ मि ৪২ সে";
+            document.getElementById('statAvgDuration').innerText = "১ মি ৪২ সে";
 
-            // Location Breakdown Render
             const regions = ['ঢাকা / গাজীপুর', 'চট্টগ্রাম', 'সিলেট / উত্তর', 'রাজশাহী', 'খুলনা / বরিশাল', 'রংপুর', 'ময়মনসিংহ', 'আন্তর্জাতিক / প্রবাসী'];
             const locContainer = document.getElementById('locationBreakdownGrid');
             locContainer.innerHTML = '';
@@ -849,7 +847,6 @@
                 locContainer.appendChild(div);
             });
 
-            // Blood Breakdown
             const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
             const bloodContainer = document.getElementById('bloodBreakdownGrid');
             bloodContainer.innerHTML = '';
@@ -1033,18 +1030,12 @@
                 tr.innerHTML = `
                     <td class="py-2 px-2 text-red-400">#${String(app.serial).padStart(3, '0')}</td>
                     <td class="py-2 px-2 text-white font-sans">${app.name}</td>
-                    <td class="py-2 px-2 text-sky-400">${app.ipAddress || '127.0.0.1'}</td>
-                    <td class="py-2 px-2 text-neutral-400">${app.timeSpent || '২ মিনিট'}</td>
+                    <td class="py-2 px-2 text-sky-400">${app.ipAddress || 'N/A'}</td>
+                    <td class="py-2 px-2 text-neutral-400">${app.timeSpent || 'N/A'}</td>
                     <td class="py-2 px-2">${getStatusBadgeHtml(app.status, app.objectionReason)}</td>
                 `;
                 tableBody.appendChild(tr);
             });
-        }
-
-        function isHigherEducated(eduString) {
-            if (!eduString) return false;
-            const s = eduString.toLowerCase();
-            return ['hsc','bba','mba','bsc','msc','ba','ma','honours','degree','masters','university'].some(kw => s.includes(kw));
         }
 
         function openModal(applicant) {
@@ -1062,8 +1053,8 @@
             document.getElementById('modalEmail').innerText = applicant.email;
             document.getElementById('modalFb').href = applicant.fb.startsWith('http') ? applicant.fb : `https://${applicant.fb}`;
             document.getElementById('modalTg').innerText = applicant.tg || 'N/A';
-            document.getElementById('modalIp').innerText = applicant.ipAddress || '127.0.0.1';
-            document.getElementById('modalTimeSpent').innerText = applicant.timeSpent || '২ মিনিট';
+            document.getElementById('modalIp').innerText = applicant.ipAddress || 'N/A';
+            document.getElementById('modalTimeSpent').innerText = applicant.timeSpent || 'N/A';
 
             updateModalStatusBadge(applicant.status, applicant.objectionReason);
             currentObjectionReason = applicant.objectionReason || 'video';
@@ -1154,29 +1145,88 @@
 
         function toggleEmailLanguage(lang) {
             currentEmailLang = lang;
-            document.getElementById('modalEmailLangTag').innerText = `ভাষা: ${lang.toUpperCase()}`;
+            const tag = document.getElementById('modalEmailLangTag');
+            const btnBn = document.getElementById('langBtnBn');
+            const btnEn = document.getElementById('langBtnEn');
+            
+            if (lang === 'bn') {
+                tag.innerText = 'ভাষা: বাংলা';
+                btnBn.className = 'px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold';
+                btnEn.className = 'px-2 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300';
+            } else {
+                tag.innerText = 'ভাষা: English';
+                btnEn.className = 'px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold';
+                btnBn.className = 'px-2 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300';
+            }
+            alertBox(`ইমেইলের ভাষা নির্বাচন করা হয়েছে: ${lang === 'bn' ? 'বাংলা' : 'English'}`);
         }
 
         function generateEmailContent(type, applicant) {
-            const higher = isHigherEducated(applicant.education);
-            let useEnglish = (currentEmailLang === 'en') || (currentEmailLang === 'auto' && higher);
             const serialNo = String(applicant.serial).padStart(3, '0');
             const name = applicant.name;
+            const isEnglish = currentEmailLang === 'en';
+            const reason = applicant.objectionReason || currentObjectionReason || 'video';
 
+            // ১. APPROVE / VERIFIED
             if (type === 'Verified') {
+                if (isEnglish) {
+                    return {
+                        subject: `Congratulations! Your BCT Recruitment Application is Approved 🎉`,
+                        body: `Assalamu Alaikum ${name},\n\nWe are pleased to inform you that your application (#${serialNo}) to join Bangladesh Cyber Tribe - BCT has been successfully verified and officially approved (VERIFIED).\n\nPlease click on the link below to send a join request to our Messenger group. Be sure to send the request using the exact Facebook account you submitted in your application.\n\nMessenger Group Link: https://m.me/j/XXDg-bpWlQMzX3Of/?send_source=gc%3Acopy_invite_link_t\n\nIf you face any issues joining, please message this Telegram account: t.me/declan_rovan\n\nA warm welcome to you on behalf of Team BCT. We look forward to your active participation for Islam, the country, and humanity.\n\nBest regards,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
+                    };
+                } else {
+                    return {
+                        subject: `অভিনন্দন! BCT রিক্রুটমেন্ট আবেদন গৃহীত হয়েছে🎉`,
+                        body: `আসসালামু আলাইকুম ${name},\n\nঅত্যন্ত আনন্দের সাথে জানানো যাচ্ছে যে, Bangladesh Cyber Tribe - BCT তে যোগদানের জন্য আপনার পাঠানো আবেদনটি (#${serialNo}) সফলভাবে যাচাই করে চূড়ান্তভাবে অনুমোদিত (VERIFIED) হয়েছে।\n\nঅনুগ্রহ করে নিচের দেয়া লিংকে ক্লিক করে মেসেঞ্জার গ্রুপে জয়েন রিকুয়েষ্ট পাঠান। অবশ্যই যেই একাউন্ট ইনফোরমেশনে দিয়েছিলেন সেটা দিয়ে রিকোয়েস্ট দিবেন।\n\nMessenger Group Link: https://m.me/j/XXDg-bpWlQMzX3Of/?send_source=gc%3Acopy_invite_link_t\n\nজয়েন করতে কোনো সমস্যা হলে নক করবেন এই টেলিগ্রাম একাউন্টে: t.me/declan_rovan\n\nটিম BCT - এর পক্ষ থেকে আপনাকে উষ্ণ স্বাগতম। ইসলাম দেশ ও মানবতার জন্য আপনার সক্রিয় অংশগ্রহণ কাম্য।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
+                    };
+                }
+            }
+
+            // ২. OBJECTION
+            if (type === 'Objection') {
+                let obsBn = "", actBn = "", obsEn = "", actEn = "";
+
+                if (reason === 'fb') {
+                    obsBn = "- আপনার প্রদানকৃত ফেসবুক প্রোফাইল লিংকটি আসল বা স্থায়ী প্রোফাইল বলে প্রতীয়মান হচ্ছে না অথবা প্রোফাইলটি রিচ করা যাচ্ছে না।";
+                    actBn = "- দয়া করে আপনার মূল ও সক্রিয় ফেসবুক প্রোফাইলের সঠিক লিঙ্ক এই মেইলের জবাবে প্রদান করুন।";
+                    obsEn = "- The Facebook profile link you provided does not appear to be an authentic/permanent profile or cannot be reached.";
+                    actEn = "- Please reply to this email with the accurate link to your main and active Facebook profile.";
+                } else if (reason === 'card') {
+                    obsBn = "- আপনার প্রদানকৃত ইনফরমেশন ফর্মে আপনার দেয়া আইডেন্টিটি কার্ডটি আমাদের কাছে ভেলিড মনে হয় নাই।";
+                    actBn = "- দয়া করে আপনার একটি ভেলিড আইডেন্টিটি কার্ড স্পষ্ট করে ছবি তুলে এই মেইলের জবাবে এটাচ করে প্রদান করুন।";
+                    obsEn = "- The identity card provided in your information form did not appear valid to us.";
+                    actEn = "- Please take a clear photo of a valid identity card and attach it in your reply to this email.";
+                } else {
+                    // video or selfie
+                    obsBn = "- আপনার প্রদানকৃত ইনফরমেশন এ আপনার চেহারা সঠিক ভাবে আসে নাই।";
+                    actBn = "- আপনি একটি ১৫ সেকেন্ডের ফেইস ভিডিও করে এই মেইলের রিপ্লাই করবেন।";
+                    obsEn = "- Your face did not appear clearly in the information you submitted.";
+                    actEn = "- Please record a clear 15-second face video and reply to this email with it.";
+                }
+
+                if (isEnglish) {
+                    return {
+                        subject: `Action Required: File Clearance Regarding BCT Application`,
+                        body: `Assalamu Alaikum ${name},\n\nThank you for expressing your interest in joining Bangladesh Cyber Tribe - BCT.\n\nWhile reviewing your application (#${serialNo}), the verification panel noticed a deficiency/objection in a specific area:\n\nObservation:\n${obsEn}\n\nYour Action Required:\n${actEn}\n\nTo get your application successfully verified, please reply directly to this email with the corrected file or accurate information within the next 48 hours. As soon as your information is received, your profile will be verified and the next steps will be communicated.\n\nBest regards,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe - BCT`
+                    };
+                } else {
+                    return {
+                        subject: `Action Required: BCT আবেদনে ফাইল ক্লিয়ারেন্স সংক্রান্ত`,
+                        body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT তে যুক্ত হওয়ার আগ্রহ প্রকাশের জন্য আপনাকে ধন্যবাদ।\n\nআপনার আবেদনটি (#${serialNo}) পর্যালোচনা করার সময় ভেরিফিকেশন প্যানেল একটি নির্দিষ্ট বিষয়ে ঘাটতি/আপত্তি পরিলক্ষিত করেছে:\n\nপর্যবেক্ষণ:\n${obsBn}\n\nআপনার করণীয়:\n${actBn}\n\nআপনার আবেদনটি সফলভাবে ভেরিফাইড করতে পরবর্তী ৪৮ ঘণ্টার মধ্যে এই ইমেইলের সরাসরি রিপ্লাই দিয়ে সংশোধিত ফাইল বা সঠিক তথ্য পাঠিয়ে দিন। আপনার তথ্য পাওয়ার সাথে সাথেই প্রোফাইলটি ভেরিফাইড করা হবে এবং পরবর্তী পদক্ষেপ জানিয়ে দেয়া হবে।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe - BCT`
+                    };
+                }
+            }
+
+            // ৩. UNVERIFIED
+            if (isEnglish) {
                 return {
-                    subject: `Official Acceptance: BCT Enrollment (#${serialNo}) - Bangladesh Cyber Tribe`,
-                    body: `Dear ${name},\n\nCongratulations! Your application (#${serialNo}) for Bangladesh Cyber Tribe (BCT) has been officially APPROVED.\n\nWelcome to the tribe.\n\nRegards,\nTeam BCT Convener`
-                };
-            } else if (type === 'Objection') {
-                return {
-                    subject: `Action Required: Verification Clearance for BCT Application (#${serialNo})`,
-                    body: `Dear ${name},\n\nDuring verification of your application (#${serialNo}), an issue was found with your submission. Please reply to this email with correct file.\n\nRegards,\nTeam BCT`
+                    subject: `Application Update (#${serialNo}) - Bangladesh Cyber Tribe`,
+                    body: `Assalamu Alaikum ${name},\n\nThank you for applying to Bangladesh Cyber Tribe - BCT.\n\nAfter a thorough review of your application (#${serialNo}) by our admin panel, we regret to inform you that your application cannot be approved at this moment as it does not meet our designated verification policies and current criteria.\n\nBCT always recruits members while maintaining strict ethics and specific standards. If a new opportunity or recruitment session opens in the future, you will have the opportunity to apply again.\n\nBest wishes for the future.\n\nBest regards,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
                 };
             } else {
                 return {
-                    subject: `Update Regarding Your BCT Application (#${serialNo})`,
-                    body: `Dear ${name},\n\nThank you for applying to BCT. Unfortunately, we cannot approve your enrollment at this time.\n\nRegards,\nTeam BCT`
+                    subject: `আবেদন সংক্রান্ত বিজ্ঞপ্তি (#${serialNo}) - Bangladesh Cyber Tribe`,
+                    body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT এ আবেদনের জন্য আপনাকে ধন্যবাদ।\n\nআমাদের অ্যাডমিন প্যানেল কর্তৃক আপনার আবেদনটি (#${serialNo}) বিস্তারিত পর্যালোচনার পর অত্যন্ত দুঃখের সাথে জানানো যাচ্ছে যে, আমাদের নির্ধারিত ভেরিফিকেশন নীতিমালা ও বর্তমান ক্রাইটেরিয়া পূরণ না হওয়ায় আপনার আবেদনটি এই মুহূর্তে অনুমোদন করা সম্ভব হচ্ছে না।\n\nBCT সর্বদা কঠোর এথিক্স ও সুনির্দিষ্ট মানদণ্ড বজায় রেখে সদস্য সংগ্রহ করে থাকে। ভবিষ্যতে নতুন কোনো সুযোগ বা রিক্রুটমেন্ট সেশন চালু হলে আপনি পুনরায় আবেদন করার সুযোগ পাবেন।\n\nআগামীর জন্য শুভকামনা।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
                 };
             }
         }
@@ -1185,7 +1235,12 @@
             if (!currentApplicant || !currentApplicant.email) return alertBox('ইমেইল পাওয়া যায়নি');
             setApplicantStatus(type);
             const ed = generateEmailContent(type, currentApplicant);
-            window.location.href = `mailto:${encodeURIComponent(currentApplicant.email)}?subject=${encodeURIComponent(ed.subject)}&body=${encodeURIComponent(ed.body)}`;
+            const mailtoUrl = `mailto:${encodeURIComponent(currentApplicant.email)}?subject=${encodeURIComponent(ed.subject)}&body=${encodeURIComponent(ed.body)}`;
+            const a = document.createElement('a');
+            a.href = mailtoUrl;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         function setMediaButton(elementId, url) {
@@ -1232,4 +1287,4 @@
         }
     </script>
 </body>
-    </html>
+                        </html>
