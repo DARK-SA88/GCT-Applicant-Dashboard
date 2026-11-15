@@ -1,6 +1,6 @@
 {
-  "name": "GCT App",
-  "short_name": "GCT App",
+  "name": "BCT information Control Hub",
+  "short_name": "BCT Info Hub",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
