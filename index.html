@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BCT Command Center | Native Control Suite</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#e5222b">
+    <link rel="icon" href="/icon.png">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BCT Info Hub">
 
     <!-- Google Fonts: Noto Sans Bengali & Syne -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -250,11 +258,11 @@
 
                 <div class="native-card p-5">
                     <h4 class="text-xs font-bold uppercase tracking-widest text-neutral-300 flex items-center gap-2 mb-3">
-                        <i class="fa-solid fa-clock-rotate-left text-red-500"></i> ফর্ম পূরণের গড় সময়
+                        <i class="fa-solid fa-clock-rotate-left text-red-500"></i> ফর্ম পূরণের গড় সময়
                     </h4>
                     <div class="bg-black/60 p-4 rounded-xl border border-white/5 text-center my-auto">
                         <span id="statAvgDuration" class="text-2xl font-extrabold text-white font-mono">-- মি</span>
-                        <span class="text-[11px] text-neutral-400 mt-1 block">গড় সময় ব্যয় (Average Duration)</span>
+                        <span class="text-[11px] text-neutral-400 mt-1 block">গড় সময় ব্যয় (Average Duration)</span>
                     </div>
                 </div>
             </div>
@@ -276,7 +284,7 @@
             <div class="native-card p-3.5 space-y-3">
                 <div class="relative w-full">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
-                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="সিরিয়াল (#001), নাম, ফোন বা ইমেইল দিয়ে সার্চ করুন..." 
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="সিরিয়াল (#001), নাম, ফোন বা ইমেইল দিয়ে সার্চ করুন..." 
                         class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-black/60 border border-white/10 text-white placeholder-neutral-500 text-xs sm:text-sm focus:outline-none focus:border-red-600 transition-all font-sans">
                 </div>
 
@@ -300,14 +308,14 @@
                         <select id="sortOption" onchange="applyFilters()" class="bg-black border border-white/10 text-neutral-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-600">
                             <option value="newest">নতুন আগে</option>
                             <option value="oldest">পুরাতন আগে</option>
-                            <option value="name">নাম অনুযায়ী</option>
+                            <option value="name">নাম অনুযায়ী</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Bulk Selection & Action Toolbar -->
                 <div id="bulkToolbar" class="hidden items-center justify-between bg-neutral-900/90 border border-red-600/30 p-2.5 rounded-xl">
-                    <span class="text-xs font-bold text-red-400 font-mono"><span id="selectedCountBadge">0</span> টি সিলেক্ট করা হয়েছে</span>
+                    <span class="text-xs font-bold text-red-400 font-mono"><span id="selectedCountBadge">0</span> টি সিলেক্ট করা হয়েছে</span>
                     <div class="flex items-center gap-2">
                         <button onclick="bulkChangeStatus('Verified')" class="px-2.5 py-1 rounded bg-emerald-600 text-white text-[11px] font-bold">ভেরিফাইড দিন</button>
                         <button onclick="bulkChangeStatus('Unverified')" class="px-2.5 py-1 rounded bg-red-600 text-white text-[11px] font-bold">আন-ভেরিফাইড দিন</button>
@@ -331,7 +339,7 @@
                     <i class="fa-solid fa-folder-open text-xl text-neutral-500"></i>
                 </div>
                 <h4 class="text-sm font-bold text-neutral-300">কোনো তথ্য মেলেনি</h4>
-                <p class="text-xs text-neutral-500 mt-1">অন্য কোনো ফিল্টার বা কিওয়ার্ড দিয়ে অনুসন্ধান করুন।</p>
+                <p class="text-xs text-neutral-500 mt-1">অন্য কোনো ফিল্টার বা কিওয়ার্ড দিয়ে অনুসন্ধান করুন।</p>
             </div>
         </section>
 
@@ -344,7 +352,7 @@
                         <h3 class="text-lg font-bold text-white mt-2 flex items-center gap-2">
                             <i class="fa-solid fa-shield-virus text-red-500"></i> পূর্ব অভিজ্ঞতা সম্পন্ন সদস্য
                         </h3>
-                        <p class="text-xs text-neutral-400 mt-1">যাঁদের পূর্ব অভিজ্ঞতা রয়েছে</p>
+                        <p class="text-xs text-neutral-400 mt-1">যাঁদের পূর্ব অভিজ্ঞতা রয়েছে</p>
                     </div>
                     <span id="cyberUnitTotalBadge" class="text-xl font-extrabold text-white font-mono px-3 py-1 rounded-xl bg-black border border-white/10">0</span>
                 </div>
@@ -424,7 +432,7 @@
             <div class="native-card p-5">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-                        <i class="fa-solid fa-network-wired text-red-500"></i> আইপি অ্যাড্রেস ও ফর্ম ফিলাপের সময় লগ (Anti-Spam Tracker)
+                        <i class="fa-solid fa-network-wired text-red-500"></i> আইপি অ্যাড্রেস ও ফর্ম ফিলাপের সময় লগ (Anti-Spam Tracker)
                     </h4>
                     <button onclick="exportToCSV()" class="text-xs text-red-400 hover:text-white font-semibold flex items-center gap-1">
                         <i class="fa-solid fa-download text-[10px]"></i> সম্পূর্ণ ব্যাকআপ
@@ -452,7 +460,7 @@
     <!-- Details & Verification Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
         <div class="native-card modal-animate w-full max-w-2xl rounded-2xl border-white/15 overflow-hidden my-auto max-h-[92vh] flex flex-col bg-[#08080a]">
-            
+
             <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-black/60">
                 <div class="flex items-center gap-3">
                     <span id="modalSerialBadge" class="px-2.5 py-1 crimson-pill rounded-lg text-xs font-mono font-bold">#001</span>
@@ -470,7 +478,7 @@
             </div>
 
             <div class="p-5 overflow-y-auto space-y-4">
-                
+
                 <!-- Verification Decision Controller -->
                 <div class="bg-black/80 rounded-xl p-3.5 border border-white/10 space-y-3">
                     <div class="flex items-center justify-between">
@@ -496,11 +504,11 @@
                     </div>
 
                     <div id="objectionTypeBox" class="hidden pt-2 border-t border-white/5">
-                        <label class="block text-[11px] text-amber-300 font-semibold mb-1.5">কোন বিষয়ে আপত্তি / ঘাটতি রয়েছে:</label>
+                        <label class="block text-[11px] text-amber-300 font-semibold mb-1.5">কোন বিষয়ে আপত্তি / ঘাটতি রয়েছে:</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <button onclick="setObjectionReason('video')" id="obj_btn_video" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">🎥 শপথ ভিডিও</button>
                             <button onclick="setObjectionReason('selfie')" id="obj_btn_selfie" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">📷 ফেস ভেরিফিকেশন</button>
-                            <button onclick="setObjectionReason('card')" id="obj_btn_card" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">📄 পরিচয়পত্র</button>
+                            <button onclick="setObjectionReason('card')" id="obj_btn_card" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">📄 পরিচয়পত্র</button>
                             <button onclick="setObjectionReason('fb')" id="obj_btn_fb" class="obj-opt-btn py-1 px-2 rounded bg-black border border-white/10 text-[11px] text-neutral-300 hover:border-amber-500 transition-all text-center">🔗 ফেসবুক আইডি</button>
                         </div>
                     </div>
@@ -520,7 +528,7 @@
                             <i class="fa-solid fa-envelope-circle-check"></i> কনগ্র্যাচুলেশন মেইল
                         </button>
                         <button onclick="sendPreparedEmail('Objection')" class="py-2.5 px-3 rounded-lg bg-amber-950/30 hover:bg-amber-600 border border-amber-500/30 hover:text-black text-amber-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-envelope-open-text"></i> ক্লিয়ারেন্স মেইল
+                            <i class="fa-solid fa-envelope-open-text"></i> ক্লিয়ারেন্স মেইল
                         </button>
                         <button onclick="sendPreparedEmail('Unverified')" class="py-2.5 px-3 rounded-lg bg-red-950/30 hover:bg-red-600 border border-red-500/30 hover:text-white text-red-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-envelope-open"></i> প্রত্যাখ্যান মেইল
@@ -530,7 +538,7 @@
                     <div class="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
                         <span>স্বাক্ষর: <b>Rifat Mahmud (Founder & Convener)</b></span>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-neutral-400">ম্যানুয়াল সুইচ:</span>
+                            <span class="text-[10px] text-neutral-400">ম্যানুয়াল সুইচ:</span>
                             <button onclick="toggleEmailLanguage('bn')" id="langBtnBn" class="px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold">বাংলা</button>
                             <button onclick="toggleEmailLanguage('en')" id="langBtnEn" class="px-2 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300">English</button>
                         </div>
@@ -544,7 +552,7 @@
                         <span id="modalIp" class="text-xs font-bold text-white mt-0.5 block font-mono">-</span>
                     </div>
                     <div class="bg-black/70 p-3 rounded-xl border border-white/5">
-                        <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold block">ফর্ম ফিলাপের সময়</span>
+                        <span class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold block">ফর্ম ফিলাপের সময়</span>
                         <span id="modalTimeSpent" class="text-xs font-bold text-red-400 mt-0.5 block font-mono">-</span>
                     </div>
                 </div>
@@ -615,7 +623,7 @@
                         </a>
                         <a id="modalDocBtn" href="#" target="_blank" class="p-3 rounded-xl bg-black border border-white/10 hover:border-red-600 transition-all flex flex-col items-center justify-center text-center group">
                             <i class="fa-solid fa-id-card text-xl text-neutral-500 group-hover:text-red-500 transition-colors mb-1.5"></i>
-                            <span class="text-[11px] font-bold text-neutral-200">পরিচয়পত্র</span>
+                            <span class="text-[11px] font-bold text-neutral-200">পরিচয়পত্র</span>
                         </a>
                     </div>
                 </div>
@@ -721,7 +729,7 @@
 
             const targetView = document.getElementById(`view_${tabName}`);
             const targetTabBtn = document.getElementById(`tab_${tabName}`);
-            
+
             if (targetView) targetView.classList.remove('hidden');
             if (targetTabBtn) targetTabBtn.classList.add('active');
 
@@ -756,11 +764,11 @@
                     applyFilters();
                     renderAnalytics();
                 } else {
-                    alertBox(`বার্তা: ${data.message || 'ডাটা লোড হয়নি'}`);
+                    alertBox(`বার্তা: ${data.message || 'ডাটা লোড হয়নি'}`);
                 }
             } catch (err) {
                 console.error('Fetch Error:', err);
-                alertBox('ডাটা লোড হয়নি। পিন বা কানেকশন চেক করুন।');
+                alertBox('ডাটা লোড হয়নি। পিন বা কানেকশন চেক করুন।');
             } finally {
                 syncIcon.classList.remove('fa-spin');
             }
@@ -959,19 +967,19 @@
             updateBulkToolbar();
             applyFilters();
             renderAnalytics();
-            alertBox('নির্বাচিত প্রার্থীর স্ট্যাটাস আপডেট হয়েছে');
+            alertBox('নির্বাচিত প্রার্থীর স্ট্যাটাস আপডেট হয়েছে');
         }
 
         function bulkDelete() {
             if (selectedSerials.size === 0) return;
             if (!confirm('নির্বাচিত আবেদনগুলো কি নিশ্চিত ডিলিট করতে চান?')) return;
-            
+
             allApplicants = allApplicants.filter(a => !selectedSerials.has(a.serial));
             selectedSerials.clear();
             updateBulkToolbar();
             applyFilters();
             renderAnalytics();
-            alertBox('নির্বাচিত আবেদনসমূহ মুছে ফেলা হয়েছে');
+            alertBox('নির্বাচিত আবেদনসমূহ মুছে ফেলা হয়েছে');
         }
 
         function renderMainGrid() {
@@ -1067,9 +1075,9 @@
             if (applicant.cyberExp === 'Yes') {
                 cyberBox.innerHTML = `
                     <div class="space-y-1 text-xs">
-                        <p class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> অভিজ্ঞতা রয়েছে</p>
+                        <p class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> অভিজ্ঞতা রয়েছে</p>
                         <p class="text-neutral-300"><b>কাজ:</b> ${applicant.cyberWork}</p>
-                        <p class="text-neutral-300"><b>সময়কাল:</b> ${applicant.cyberDuration}</p>
+                        <p class="text-neutral-300"><b>সময়কাল:</b> ${applicant.cyberDuration}</p>
                         <p class="text-neutral-300"><b>পূর্বের টিম:</b> ${applicant.cyberTeam}</p>
                     </div>
                 `;
@@ -1129,7 +1137,7 @@
             highlightObjectionBtn(reasonKey);
             updateModalStatusBadge('Objection', reasonKey);
             applyFilters();
-            alertBox('আপত্তির নির্দিষ্ট বিষয় সংরক্ষিত হয়েছে');
+            alertBox('আপত্তির নির্দিষ্ট বিষয় সংরক্ষিত হয়েছে');
         }
 
         function highlightObjectionBtn(reasonKey) {
@@ -1148,7 +1156,7 @@
             const tag = document.getElementById('modalEmailLangTag');
             const btnBn = document.getElementById('langBtnBn');
             const btnEn = document.getElementById('langBtnEn');
-            
+
             if (lang === 'bn') {
                 tag.innerText = 'ভাষা: বাংলা';
                 btnBn.className = 'px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold';
@@ -1158,7 +1166,7 @@
                 btnEn.className = 'px-2 py-0.5 rounded bg-red-600/20 border border-red-500 text-[10px] text-white font-bold';
                 btnBn.className = 'px-2 py-0.5 rounded bg-neutral-900 border border-white/10 text-[10px] text-neutral-300';
             }
-            alertBox(`ইমেইলের ভাষা নির্বাচন করা হয়েছে: ${lang === 'bn' ? 'বাংলা' : 'English'}`);
+            alertBox(`ইমেইলের ভাষা নির্বাচন করা হয়েছে: ${lang === 'bn' ? 'বাংলা' : 'English'}`);
         }
 
         function generateEmailContent(type, applicant) {
@@ -1176,8 +1184,8 @@
                     };
                 } else {
                     return {
-                        subject: `অভিনন্দন! BCT রিক্রুটমেন্ট আবেদন গৃহীত হয়েছে🎉`,
-                        body: `আসসালামু আলাইকুম ${name},\n\nঅত্যন্ত আনন্দের সাথে জানানো যাচ্ছে যে, Bangladesh Cyber Tribe - BCT তে যোগদানের জন্য আপনার পাঠানো আবেদনটি (#${serialNo}) সফলভাবে যাচাই করে চূড়ান্তভাবে অনুমোদিত (VERIFIED) হয়েছে।\n\nঅনুগ্রহ করে নিচের দেয়া লিংকে ক্লিক করে মেসেঞ্জার গ্রুপে জয়েন রিকুয়েষ্ট পাঠান। অবশ্যই যেই একাউন্ট ইনফোরমেশনে দিয়েছিলেন সেটা দিয়ে রিকোয়েস্ট দিবেন।\n\nMessenger Group Link: https://m.me/j/XXDg-bpWlQMzX3Of/?send_source=gc%3Acopy_invite_link_t\n\nজয়েন করতে কোনো সমস্যা হলে নক করবেন এই টেলিগ্রাম একাউন্টে: t.me/declan_rovan\n\nটিম BCT - এর পক্ষ থেকে আপনাকে উষ্ণ স্বাগতম। ইসলাম দেশ ও মানবতার জন্য আপনার সক্রিয় অংশগ্রহণ কাম্য।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
+                        subject: `অভিনন্দন! BCT রিক্রুটমেন্ট আবেদন গৃহীত হয়েছে🎉`,
+                        body: `আসসালামু আলাইকুম ${name},\n\nঅত্যন্ত আনন্দের সাথে জানানো যাচ্ছে যে, Bangladesh Cyber Tribe - BCT তে যোগদানের জন্য আপনার পাঠানো আবেদনটি (#${serialNo}) সফলভাবে যাচাই করে চূড়ান্তভাবে অনুমোদিত (VERIFIED) হয়েছে।\n\nঅনুগ্রহ করে নিচের দেয়া লিংকে ক্লিক করে মেসেঞ্জার গ্রুপে জয়েন রিকুয়েষ্ট পাঠান। অবশ্যই যেই একাউন্ট ইনফোরমেশনে দিয়েছিলেন সেটা দিয়ে রিকোয়েস্ট দিবেন।\n\nMessenger Group Link: https://m.me/j/XXDg-bpWlQMzX3Of/?send_source=gc%3Acopy_invite_link_t\n\nজয়েন করতে কোনো সমস্যা হলে নক করবেন এই টেলিগ্রাম একাউন্টে: t.me/declan_rovan\n\nটিম BCT - এর পক্ষ থেকে আপনাকে উষ্ণ স্বাগতম। ইসলাম দেশ ও মানবতার জন্য আপনার সক্রিয় অংশগ্রহণ কাম্য।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
                     };
                 }
             }
@@ -1187,13 +1195,13 @@
                 let obsBn = "", actBn = "", obsEn = "", actEn = "";
 
                 if (reason === 'fb') {
-                    obsBn = "- আপনার প্রদানকৃত ফেসবুক প্রোফাইল লিংকটি আসল বা স্থায়ী প্রোফাইল বলে প্রতীয়মান হচ্ছে না অথবা প্রোফাইলটি রিচ করা যাচ্ছে না।";
-                    actBn = "- দয়া করে আপনার মূল ও সক্রিয় ফেসবুক প্রোফাইলের সঠিক লিঙ্ক এই মেইলের জবাবে প্রদান করুন।";
+                    obsBn = "- আপনার প্রদানকৃত ফেসবুক প্রোফাইল লিংকটি আসল বা স্থায়ী প্রোফাইল বলে প্রতীয়মান হচ্ছে না অথবা প্রোফাইলটি রিচ করা যাচ্ছে না।";
+                    actBn = "- দয়া করে আপনার মূল ও সক্রিয় ফেসবুক প্রোফাইলের সঠিক লিঙ্ক এই মেইলের জবাবে প্রদান করুন।";
                     obsEn = "- The Facebook profile link you provided does not appear to be an authentic/permanent profile or cannot be reached.";
                     actEn = "- Please reply to this email with the accurate link to your main and active Facebook profile.";
                 } else if (reason === 'card') {
-                    obsBn = "- আপনার প্রদানকৃত ইনফরমেশন ফর্মে আপনার দেয়া আইডেন্টিটি কার্ডটি আমাদের কাছে ভেলিড মনে হয় নাই।";
-                    actBn = "- দয়া করে আপনার একটি ভেলিড আইডেন্টিটি কার্ড স্পষ্ট করে ছবি তুলে এই মেইলের জবাবে এটাচ করে প্রদান করুন।";
+                    obsBn = "- আপনার প্রদানকৃত ইনফরমেশন ফর্মে আপনার দেয়া আইডেন্টিটি কার্ডটি আমাদের কাছে ভেলিড মনে হয় নাই।";
+                    actBn = "- দয়া করে আপনার একটি ভেলিড আইডেন্টিটি কার্ড স্পষ্ট করে ছবি তুলে এই মেইলের জবাবে এটাচ করে প্রদান করুন।";
                     obsEn = "- The identity card provided in your information form did not appear valid to us.";
                     actEn = "- Please take a clear photo of a valid identity card and attach it in your reply to this email.";
                 } else {
@@ -1211,8 +1219,8 @@
                     };
                 } else {
                     return {
-                        subject: `Action Required: BCT আবেদনে ফাইল ক্লিয়ারেন্স সংক্রান্ত`,
-                        body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT তে যুক্ত হওয়ার আগ্রহ প্রকাশের জন্য আপনাকে ধন্যবাদ।\n\nআপনার আবেদনটি (#${serialNo}) পর্যালোচনা করার সময় ভেরিফিকেশন প্যানেল একটি নির্দিষ্ট বিষয়ে ঘাটতি/আপত্তি পরিলক্ষিত করেছে:\n\nপর্যবেক্ষণ:\n${obsBn}\n\nআপনার করণীয়:\n${actBn}\n\nআপনার আবেদনটি সফলভাবে ভেরিফাইড করতে পরবর্তী ৪৮ ঘণ্টার মধ্যে এই ইমেইলের সরাসরি রিপ্লাই দিয়ে সংশোধিত ফাইল বা সঠিক তথ্য পাঠিয়ে দিন। আপনার তথ্য পাওয়ার সাথে সাথেই প্রোফাইলটি ভেরিফাইড করা হবে এবং পরবর্তী পদক্ষেপ জানিয়ে দেয়া হবে।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe - BCT`
+                        subject: `Action Required: BCT আবেদনে ফাইল ক্লিয়ারেন্স সংক্রান্ত`,
+                        body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT তে যুক্ত হওয়ার আগ্রহ প্রকাশের জন্য আপনাকে ধন্যবাদ।\n\nআপনার আবেদনটি (#${serialNo}) পর্যালোচনা করার সময় ভেরিফিকেশন প্যানেল একটি নির্দিষ্ট বিষয়ে ঘাটতি/আপত্তি পরিলক্ষিত করেছে:\n\nপর্যবেক্ষণ:\n${obsBn}\n\nআপনার করণীয়:\n${actBn}\n\nআপনার আবেদনটি সফলভাবে ভেরিফাইড করতে পরবর্তী ৪৮ ঘণ্টার মধ্যে এই ইমেইলের সরাসরি রিপ্লাই দিয়ে সংশোধিত ফাইল বা সঠিক তথ্য পাঠিয়ে দিন। আপনার তথ্য পাওয়ার সাথে সাথেই প্রোফাইলটি ভেরিফাইড করা হবে এবং পরবর্তী পদক্ষেপ জানিয়ে দেয়া হবে।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe - BCT`
                     };
                 }
             }
@@ -1226,13 +1234,13 @@
             } else {
                 return {
                     subject: `আবেদন সংক্রান্ত বিজ্ঞপ্তি (#${serialNo}) - Bangladesh Cyber Tribe`,
-                    body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT এ আবেদনের জন্য আপনাকে ধন্যবাদ।\n\nআমাদের অ্যাডমিন প্যানেল কর্তৃক আপনার আবেদনটি (#${serialNo}) বিস্তারিত পর্যালোচনার পর অত্যন্ত দুঃখের সাথে জানানো যাচ্ছে যে, আমাদের নির্ধারিত ভেরিফিকেশন নীতিমালা ও বর্তমান ক্রাইটেরিয়া পূরণ না হওয়ায় আপনার আবেদনটি এই মুহূর্তে অনুমোদন করা সম্ভব হচ্ছে না।\n\nBCT সর্বদা কঠোর এথিক্স ও সুনির্দিষ্ট মানদণ্ড বজায় রেখে সদস্য সংগ্রহ করে থাকে। ভবিষ্যতে নতুন কোনো সুযোগ বা রিক্রুটমেন্ট সেশন চালু হলে আপনি পুনরায় আবেদন করার সুযোগ পাবেন।\n\nআগামীর জন্য শুভকামনা।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
+                    body: `আসসালামু আলাইকুম ${name},\n\nBangladesh Cyber Tribe - BCT এ আবেদনের জন্য আপনাকে ধন্যবাদ।\n\nআমাদের অ্যাডমিন প্যানেল কর্তৃক আপনার আবেদনটি (#${serialNo}) বিস্তারিত পর্যালোচনার পর অত্যন্ত দুঃখের সাথে জানানো যাচ্ছে যে, আমাদের নির্ধারিত ভেরিফিকেশন নীতিমালা ও বর্তমান ক্রাইটেরিয়া পূরণ না হওয়ায় আপনার আবেদনটি এই মুহূর্তে অনুমোদন করা সম্ভব হচ্ছে না।\n\nBCT সর্বদা কঠোর এথিক্স ও সুনির্দিষ্ট মানদণ্ড বজায় রেখে সদস্য সংগ্রহ করে থাকে। ভবিষ্যতে নতুন কোনো সুযোগ বা রিক্রুটমেন্ট সেশন চালু হলে আপনি পুনরায় আবেদন করার সুযোগ পাবেন।\n\nআগামীর জন্য শুভকামনা।\n\nধন্যবাদান্তে,\n\nRifat Mahmud\nFounder & Convener,\nBangladesh Cyber Tribe`
                 };
             }
         }
 
         function sendPreparedEmail(type) {
-            if (!currentApplicant || !currentApplicant.email) return alertBox('ইমেইল পাওয়া যায়নি');
+            if (!currentApplicant || !currentApplicant.email) return alertBox('ইমেইল পাওয়া যায়নি');
             setApplicantStatus(type);
             const ed = generateEmailContent(type, currentApplicant);
             const mailtoUrl = `mailto:${encodeURIComponent(currentApplicant.email)}?subject=${encodeURIComponent(ed.subject)}&body=${encodeURIComponent(ed.body)}`;
@@ -1255,7 +1263,7 @@
             copyToClipboard(`BCT Applicant (#${currentApplicant.serial})\nName: ${currentApplicant.name}\nPhone: ${currentApplicant.phone}\nIP: ${currentApplicant.ipAddress}`);
         }
         function copyToClipboard(str) {
-            navigator.clipboard.writeText(str).then(() => alertBox('কপি করা হয়েছে!'));
+            navigator.clipboard.writeText(str).then(() => alertBox('কপি করা হয়েছে!'));
         }
 
         function exportToCSV() {
@@ -1285,6 +1293,12 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3200);
         }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW error:', err));
+            });
+        }
     </script>
 </body>
-                        </html>
+</html>
